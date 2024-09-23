@@ -15,25 +15,24 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   bool onLastPage = false;
-  bool showDone = false; // To control when to show 'DONE'
-  int currentPageIndex = 0; // Store the current page index
+  bool showDone = false; 
+  int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // PageView for the intro screens
+          
           PageView(
             controller: _controller,
             onPageChanged: (index) {
               setState(() {
-                // Update the current page index
+
                 currentPageIndex = index;
-                // Track if we're on the last page
+
                 onLastPage = (index == 2);
                 if (index != 2) {
-                  // Reset "DONE" visibility when navigating back to earlier pages
                   showDone = false;
                 }
               });
@@ -45,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
 
-          // SmoothPageIndicator for dots navigation
+
           Positioned(
             bottom: 150,
             left: 0,
@@ -61,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // Bottom buttons: SKIP/BACK and NEXT/DONE
+
           Positioned(
             bottom: 30,
             left: 30,
@@ -69,14 +68,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // SKIP or BACK button based on the current page
                 GestureDetector(
                   onTap: () {
                     if (currentPageIndex == 0) {
-                      // Skip button only on the first page
                       _controller.jumpToPage(2);
                     } else {
-                      // Back button for other pages
                       _controller.previousPage(
                         duration: const Duration(milliseconds: 500),
                         curve: Curves.easeIn,
@@ -86,7 +82,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Text(currentPageIndex == 0 ? 'SKIP' : 'BACK'),
                 ),
 
-                // FOR  next and let get started buttons 
                 GestureDetector(
                   onTap: () {
                     if (onLastPage && !showDone) {
