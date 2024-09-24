@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/intro_screen/intro_screen_1.dart';
-import 'package:flutter_application_1/intro_screen/intro_screen_2.dart';
-import 'package:flutter_application_1/intro_screen/intro_screen_3.dart';
-import 'package:flutter_application_1/blank_page.dart';
+import 'package:flutter_application_1/pages/intro_screen/intro_screen_1.dart';
+import 'package:flutter_application_1/pages/intro_screen/intro_screen_2.dart';
+import 'package:flutter_application_1/pages/intro_screen/intro_screen_3.dart';
+import 'package:flutter_application_1/pages/blank_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/login_page.dart';
-import 'package:flutter_application_1/pallete.dart';
+import 'package:flutter_application_1/constants/pallete.dart';
 
 class BlankPage extends StatefulWidget {
   const BlankPage({super.key});
