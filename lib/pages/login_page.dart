@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/dashboard.dart';
+import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 
 // check box
