@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/pages/dashboard/client_page.dart';
+import 'package:flutter_application_1/pages/dashboard/task_page.dart';
+
+//pending
+// dashboard bottom navbar
+// styling not perfect
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -19,9 +25,7 @@ class _DashboardPageState extends State<DashboardPage> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {},
-          icon: const Icon(
-            Icons.menu,
-          ),
+          icon: const Icon(Icons.menu),
         ),
         title: const Row(
           children: [
@@ -38,9 +42,7 @@ class _DashboardPageState extends State<DashboardPage> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(
-              Icons.search,
-            ),
+            icon: const Icon(Icons.search),
           )
         ],
       ),
@@ -52,9 +54,7 @@ class _DashboardPageState extends State<DashboardPage> {
             height: 4.5,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 20,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 20),
             child: Center(
               child: ToggleButtons(
                 isSelected: isSelected,
@@ -86,36 +86,21 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildButton('All', Pallete.lineButton1Color, () {
-                // logic for button
-                // for later
-              }),
-              _buildButton('Completed', Pallete.lineButton2Color, () {
-                // logic for button
-                // for later
-              }),
-              _buildButton('Incomplete', Pallete.lineButton3Color, () {
-                // logic for button
-                // for later
-              }),
-              _buildButton('Pending', Pallete.lineButton4Color, () {
-                // logic for button
-                // for later
-              }),
+              _buildButton('All', Pallete.lineButton1Color, () {}),
+              _buildButton('Completed', Pallete.lineButton2Color, () {}),
+              _buildButton('Incomplete', Pallete.lineButton3Color, () {}),
+              _buildButton('Pending', Pallete.lineButton4Color, () {}),
             ],
           ),
           Expanded(
-              child: Center(
-            child: Text(
-              isSelected[0] ? 'tasks' : 'clients',
+            child: Center(
+              child: isSelected[0] ? const TasksPage() : ClientsPage(),
             ),
-          ))
+          ),
         ],
       ),
     );
@@ -128,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
         onPressed: onPressed,
         child: Text(
           text,
-          style: TextStyle(fontSize: 12, color: Colors.white),
+          style: const TextStyle(fontSize: 12, color: Colors.white),
         ),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(
@@ -136,9 +121,22 @@ class _DashboardPageState extends State<DashboardPage> {
             vertical: 12,
           ),
           backgroundColor: color,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
           minimumSize: const Size(80, 50),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildClients() {
+    return const Center(
+      child: Text(
+        'Clients/Sites content goes here.',
+        style: TextStyle(
+          fontSize: 18,
+          color: Pallete.mainFontColor,
         ),
       ),
     );
