@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/custom_appbar.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/client_page.dart';
 import 'package:flutter_application_1/pages/dashboard/custom_navbar.dart';
@@ -18,28 +19,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu),
-          ),
-          title: const Text(
-            'DASHBOARD',
-            style: TextStyle(
-              color: Pallete.mainFontColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_active_sharp),
-            )
-          ],
-        ),
+        appBar: const CustomAppBar(title: 'Dashboard'),
         body: Column(
           children: [
             Container(

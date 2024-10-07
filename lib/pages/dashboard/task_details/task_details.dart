@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/custom_appbar.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/pages/dashboard/custom_navbar.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_punch.dart';
 
 class TaskDetails extends StatefulWidget {
@@ -12,33 +12,11 @@ class TaskDetails extends StatefulWidget {
 
 class _TaskDetailsState extends State<TaskDetails> {
   List<bool> isSelected = [true, false];
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.menu),
-        ),
-        title: const Text(
-          'TASK DETAILS',
-          style: TextStyle(
-            color: Pallete.mainFontColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_active_sharp),
-          )
-        ],
-      ),
+      appBar: CustomAppBar(title: 'Task Details'),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -427,14 +405,6 @@ class _TaskDetailsState extends State<TaskDetails> {
       ),
 
       // Custom Bottom Navbar
-      bottomNavigationBar: CustomNavbar(
-        selectedIndex: _selectedIndex,
-        onItemSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
     );
   }
 }
