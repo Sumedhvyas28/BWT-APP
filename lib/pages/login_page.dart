@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:go_router/go_router.dart';
 
 // check box
 // height check
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildBottom(Size mediaSize) {
     return SizedBox(
       width: mediaSize.width,
-      height: 580,
+      height: 600,
       child: Card(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -68,7 +68,26 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(
             height: 10,
           ),
-          Center(child: Image.asset('assets/logos/logo.png')),
+          Center(
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/logos/logo.png',
+                  height: 79,
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                Text(
+                  'FIELD SERVICE MANAGEMENT',
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Pallete.mainFontColor,
+                      fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
           const SizedBox(height: 20),
           _buildGreyText('Enter your Email'),
           const SizedBox(height: 20),
@@ -89,8 +108,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButton() {
     return ElevatedButton(
         onPressed: () {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => DashboardPage()));
+          GoRouter.of(context).go('/home');
         },
         style: ElevatedButton.styleFrom(
           shape: const StadiumBorder(),

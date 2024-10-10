@@ -78,7 +78,7 @@ class TasksPage extends StatelessWidget {
                           children: [
                             const Row(
                               children: [
-                                Icon(Icons.task),
+                                Icon(Icons.account_circle_rounded),
                                 SizedBox(width: 8),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,16 +110,20 @@ class TasksPage extends StatelessWidget {
                                 ElevatedButton(
                                   onPressed: () {},
                                   style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 0),
+                                        horizontal: 20, vertical: 0),
                                     minimumSize: const Size(40, 30),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'Complete',
-                                    style: TextStyle(fontSize: 12),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ],

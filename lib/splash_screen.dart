@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/pallete.dart';
 import 'dart:async';
 
-import 'package:flutter_application_1/pages/intro_screen/onboarding_screen.dart';
+import 'package:go_router/go_router.dart';
 
 // fully replacable splash screen
 
@@ -41,10 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
           });
 
           Timer(const Duration(seconds: 1), () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => OnboardingScreen()),
-            );
+            GoRouter.of(context).go('/onboarding');
           });
         });
       });
@@ -65,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: _eclipseShrinking ? 0 : 300,
               height: _eclipseShrinking ? 0 : 300,
               decoration: BoxDecoration(
-                color: const Color(0xFF001D46),
+                color: Pallete.mainFontColor,
                 shape: BoxShape.circle,
               ),
             ),

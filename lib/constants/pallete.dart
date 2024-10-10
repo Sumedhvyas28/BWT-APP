@@ -15,4 +15,6 @@ class Pallete {
   static const Color iconAddColor = Colors.blue;
 
   static const Color punchOutBtn = Color.fromRGBO(246, 36, 71, 1);
+  static const Color leaveBtn1 = Color.fromRGBO(246, 174, 65, 1);
+  static const Color leaveBtn2 = Color.fromRGBO(101, 199, 40, 1);
 }

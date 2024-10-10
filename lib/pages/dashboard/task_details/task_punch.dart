@@ -37,6 +37,7 @@ class TaskPunchState extends State<TaskPunch> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'Task Details'),
+      backgroundColor: Colors.white,
       body: Container(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
