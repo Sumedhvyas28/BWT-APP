@@ -18,6 +18,7 @@ class _AddSymptomsState extends State<AddSymptoms> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: 'Task Details'),
       body: SingleChildScrollView(
         child: Column(

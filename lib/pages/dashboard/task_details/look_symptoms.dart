@@ -13,6 +13,7 @@ class _LookForSymptomsState extends State<LookForSymptoms> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const CustomAppBar(title: 'Task Details'),
       body: SingleChildScrollView(
         child: Column(
@@ -40,6 +41,7 @@ class _LookForSymptomsState extends State<LookForSymptoms> {
               ),
             ),
             Card(
+              color: Colors.white,
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(8),
@@ -141,6 +143,7 @@ class _LookForSymptomsState extends State<LookForSymptoms> {
             ),
             // copy paste of above card
             Card(
+              color: Colors.white,
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(8),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_appbar.dart';
+import 'package:flutter_application_1/constants/drawer.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/client_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_page.dart';
@@ -16,8 +17,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: const CustomAppBar(title: 'Dashboard'),
+      drawer: DrawerPage(),
       backgroundColor: Colors.white,
       body: Column(
         children: [
@@ -27,8 +31,9 @@ class _DashboardPageState extends State<DashboardPage> {
             height: 4.5,
           ),
           Padding(
-            padding:
-                const EdgeInsets.only(top: 3, left: 8, right: 8, bottom: 2),
+            padding: EdgeInsets.symmetric(
+                horizontal: screenSize.width * 0.02,
+                vertical: screenSize.height * 0.005),
             child: Center(
               child: ToggleButtons(
                 isSelected: isSelected,
@@ -43,9 +48,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 fillColor: Colors.blue,
                 borderColor: Colors.grey,
                 borderRadius: BorderRadius.circular(30),
-                constraints: const BoxConstraints(
-                  minHeight: 31,
-                  minWidth: 91,
+                constraints: BoxConstraints(
+                  minHeight: screenSize.height * 0.04,
+                  minWidth: screenSize.width * 0.2,
                 ),
                 children: const [
                   Padding(
@@ -60,14 +65,26 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildButton('All', Pallete.lineButton1Color, () {}),
-              _buildButton('Completed', Pallete.lineButton2Color, () {}),
-              _buildButton('Incomplete', Pallete.lineButton3Color, () {}),
-              _buildButton('Pending', Pallete.lineButton4Color, () {}),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Padding(
+                padding:
+                    EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildButton(
+                        'All', Pallete.lineButton1Color, () {}, constraints),
+                    _buildButton('Completed', Pallete.lineButton2Color, () {},
+                        constraints),
+                    _buildButton('Incomplete', Pallete.lineButton3Color, () {},
+                        constraints),
+                    _buildButton('Pending', Pallete.lineButton4Color, () {},
+                        constraints),
+                  ],
+                ),
+              );
+            },
           ),
           Expanded(
             child: Center(
@@ -79,14 +96,18 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildButton(String text, Color color, VoidCallback onPressed) {
+  Widget _buildButton(String text, Color color, VoidCallback onPressed,
+      BoxConstraints constraints) {
     return SizedBox(
-      width: 100,
+      width: constraints.maxWidth * 0.2,
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 12, color: Colors.white),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Colors.white),
+          ),
         ),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
@@ -95,18 +116,6 @@ class _DashboardPageState extends State<DashboardPage> {
             borderRadius: BorderRadius.circular(30),
           ),
           minimumSize: const Size(91, 31),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildClients() {
-    return const Center(
-      child: Text(
-        'Clients/Sites content goes here.',
-        style: TextStyle(
-          fontSize: 18,
-          color: Pallete.mainFontColor,
         ),
       ),
     );

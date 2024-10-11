@@ -128,9 +128,11 @@ class TaskPunchState extends State<TaskPunch> {
                 height: 48,
                 child: Center(
                   child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(_buttonColor),
-                    ),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: _buttonColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        )),
                     onPressed: () {
                       Navigator.push(
                         context,

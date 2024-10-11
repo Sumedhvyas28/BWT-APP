@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/intro_screen/intro_screen_1.dart';
 import 'package:flutter_application_1/pages/intro_screen/intro_screen_2.dart';
 import 'package:flutter_application_1/pages/intro_screen/intro_screen_3.dart';
@@ -20,6 +21,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Define breakpoints
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    double bottomIndicatorPosition;
+    double buttonBottomPosition;
+    double buttonFontSize;
+
+    if (screenWidth <= 360) {
+      // Small phone
+      bottomIndicatorPosition = 150;
+      buttonBottomPosition = 30;
+      buttonFontSize = 14;
+    } else if (screenWidth <= 600) {
+      // Medium phone
+      bottomIndicatorPosition = 180;
+      buttonBottomPosition = 40;
+      buttonFontSize = 16;
+    } else {
+      // Large phone
+      bottomIndicatorPosition = 200;
+      buttonBottomPosition = 50;
+      buttonFontSize = 18;
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -41,21 +66,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
           Positioned(
-            bottom: 150,
+            bottom: bottomIndicatorPosition,
             left: 0,
             right: 0,
             child: Center(
               child: SmoothPageIndicator(
                 controller: _controller,
                 count: 3,
-                effect: const ExpandingDotsEffect(
-                  activeDotColor: Colors.indigo,
+                effect: ExpandingDotsEffect(
+                  dotHeight: 7,
+                  dotWidth: 5,
+                  spacing: 10,
+                  expansionFactor: 7,
+                  activeDotColor: Pallete.mainFontColor,
                 ),
               ),
             ),
           ),
           Positioned(
-            bottom: 30,
+            bottom: buttonBottomPosition,
             left: 30,
             right: 30,
             child: Row(
@@ -72,7 +101,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       );
                     }
                   },
-                  child: Text(currentPageIndex == 0 ? 'SKIP' : 'BACK'),
+                  child: Text(
+                    currentPageIndex == 0 ? 'SKIP' : 'BACK',
+                    style: TextStyle(fontSize: buttonFontSize),
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -81,8 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         showDone = true;
                       });
                     } else if (onLastPage && showDone) {
-                      // Navigate to the Login Page instead of BlankPage
-                      context.go('/login'); // Use GoRouter for navigation
+                      context.go('/login');
                     } else {
                       _controller.nextPage(
                         duration: const Duration(milliseconds: 500),
@@ -90,8 +121,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       );
                     }
                   },
-                  child:
-                      Text(onLastPage && showDone ? 'LET GET STARTED' : 'NEXT'),
+                  child: Text(
+                    onLastPage && showDone ? 'LET\'S GET STARTED' : 'NEXT',
+                    style: TextStyle(fontSize: buttonFontSize),
+                  ),
                 ),
               ],
             ),

@@ -110,9 +110,6 @@ class AppNavigation {
         ],
       ),
     ],
-
-    // still pending for the logic to do
-
     redirect: (context, state) {
       if (state.uri.toString() == '/splash') {
         Future.delayed(const Duration(seconds: 3), () {

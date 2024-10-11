@@ -11,11 +11,14 @@ class TaskDetails extends StatefulWidget {
 }
 
 class _TaskDetailsState extends State<TaskDetails> {
-  List<bool> isSelected = [true, false];
+  List<bool> isSelected = [false, false, false];
 
   @override
   Widget build(BuildContext context) {
+    // double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'Task Details'),
       body: SingleChildScrollView(
         child: Padding(
@@ -24,7 +27,8 @@ class _TaskDetailsState extends State<TaskDetails> {
             children: [
               // 1st container
               Container(
-                height: 140,
+                height: MediaQuery.of(context).size.height *
+                    0.18, // Responsive height
                 child: Card(
                   elevation: 3,
                   color: Colors.white,
@@ -32,7 +36,12 @@ class _TaskDetailsState extends State<TaskDetails> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 16.0, right: 8.0),
+                    padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width *
+                          0.04, // Responsive left padding
+                      right: MediaQuery.of(context).size.width *
+                          0.02, // Responsive right padding
+                    ),
                     child: Row(
                       children: [
                         const Expanded(
@@ -43,7 +52,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                               Text(
                                 'Sumedh Vyas',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 18, // Keep text size static
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -51,21 +60,21 @@ class _TaskDetailsState extends State<TaskDetails> {
                               Text(
                                 'Customer Service Address',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 12, // Keep text size static
                                 ),
                               ),
                               SizedBox(height: 5),
                               Text(
-                                'House No 3 , plus Cross',
+                                'House No 3, plus Cross',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 18, // Keep text size static
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                'Street , South Vietnam',
+                                'Street, South Vietnam',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 18, // Keep text size static
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -73,11 +82,12 @@ class _TaskDetailsState extends State<TaskDetails> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(
+                              MediaQuery.of(context).size.width * 0.02),
                           child: Image.asset(
                             'assets/images/cal.png',
-                            height: 118,
-                            width: 118,
+                            height: MediaQuery.of(context).size.height * 0.15,
+                            width: MediaQuery.of(context).size.width * 0.25,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -86,16 +96,17 @@ class _TaskDetailsState extends State<TaskDetails> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 20),
 
               // 2 parallel cards
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   // 1st card
                   Container(
-                    width: 190,
-                    height: 120,
+                    width: MediaQuery.of(context).size.width * 0.42,
+                    height: MediaQuery.of(context).size.height * 0.15,
                     child: Card(
                       elevation: 3,
                       color: Colors.white,
@@ -133,10 +144,10 @@ class _TaskDetailsState extends State<TaskDetails> {
                       ),
                     ),
                   ),
-                  // 1st copy
+                  // 2nd card (copy)
                   Container(
-                    width: 190,
-                    height: 120,
+                    width: MediaQuery.of(context).size.width * 0.42,
+                    height: MediaQuery.of(context).size.height * 0.15,
                     child: Card(
                       elevation: 3,
                       color: Colors.white,
@@ -144,8 +155,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.all(
-                            12.0), // Added padding inside the card
+                        padding: EdgeInsets.all(12.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -177,11 +187,12 @@ class _TaskDetailsState extends State<TaskDetails> {
                   ),
                 ],
               ),
+
               const SizedBox(height: 20),
 
               // New Container with Padding
               Container(
-                padding: const EdgeInsets.all(8.0), // Added padding
+                padding: const EdgeInsets.all(8.0),
                 height: 120,
                 child: Card(
                   elevation: 3,
@@ -305,25 +316,29 @@ class _TaskDetailsState extends State<TaskDetails> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 18, right: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 18, right: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 20),
-                        Text(
+                        const SizedBox(height: 20),
+                        const Text(
                           'Customer Query',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             Checkbox(
-                              value: true,
-                              onChanged: null,
+                              value: isSelected[0],
+                              onChanged: (newBool) {
+                                setState(() {
+                                  isSelected[0] = newBool!;
+                                });
+                              },
                             ),
                             Expanded(
                               child: Text(
@@ -333,12 +348,16 @@ class _TaskDetailsState extends State<TaskDetails> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             Checkbox(
-                              value: true,
-                              onChanged: null,
+                              value: isSelected[1],
+                              onChanged: (newBool) {
+                                setState(() {
+                                  isSelected[1] = newBool!;
+                                });
+                              },
                             ),
                             Expanded(
                               child: Text(
@@ -348,14 +367,18 @@ class _TaskDetailsState extends State<TaskDetails> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             Checkbox(
-                              value: true,
-                              onChanged: null,
+                              value: isSelected[2],
+                              onChanged: (newBool) {
+                                setState(() {
+                                  isSelected[2] = newBool!;
+                                });
+                              },
                             ),
-                            Expanded(
+                            const Expanded(
                               child: Text(
                                 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                                 style: TextStyle(fontSize: 14),
@@ -375,10 +398,11 @@ class _TaskDetailsState extends State<TaskDetails> {
               Container(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: const ButtonStyle(
-                    backgroundColor:
-                        WidgetStatePropertyAll(Pallete.mainFontColor),
-                  ),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Pallete.mainFontColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      )),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -403,8 +427,6 @@ class _TaskDetailsState extends State<TaskDetails> {
           ),
         ),
       ),
-
-      // Custom Bottom Navbar
     );
   }
 }
