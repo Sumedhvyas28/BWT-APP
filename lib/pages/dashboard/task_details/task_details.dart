@@ -15,7 +15,7 @@ class _TaskDetailsState extends State<TaskDetails> {
 
   @override
   Widget build(BuildContext context) {
-    // double screenWidth = MediaQuery.of(context).size.width;
+    // double screenWidth = MediaQuery.of(context).size
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -101,86 +101,99 @@ class _TaskDetailsState extends State<TaskDetails> {
 
               // 2 parallel cards
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // 1st card
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.42,
-                    height: MediaQuery.of(context).size.height * 0.15,
-                    child: Card(
-                      elevation: 3,
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Sumedh Vyas',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.phone),
-                                SizedBox(width: 5),
-                                Text('+91 - 1246667395'),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(Icons.phone),
-                                SizedBox(width: 5),
-                                Text('+91 - 1246667395'),
-                              ],
-                            ),
-                          ],
+                  Expanded(
+                    child: SizedBox(
+                      height: 121, // Fixed height
+                      child: Card(
+                        elevation: 3,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Sumedh Vyas',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.phone),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    '+91 - 1246667395',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(Icons.phone),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    '+91 - 1246667395',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  // 2nd card (copy)
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.42,
-                    height: MediaQuery.of(context).size.height * 0.15,
-                    child: Card(
-                      elevation: 3,
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Sumedh Vyas',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.phone),
-                                SizedBox(width: 5),
-                                Text('+91 - 1246667395'),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(Icons.phone),
-                                SizedBox(width: 5),
-                                Text('+91 - 1246667395'),
-                              ],
-                            ),
-                          ],
+                  const SizedBox(width: 10), // Spacer between cards
+                  // 2nd card
+                  Expanded(
+                    child: SizedBox(
+                      height: 121, // Fixed height
+                      child: Card(
+                        elevation: 3,
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Working Schedule',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  SizedBox(width: 5),
+                                  Text(
+                                    '17:45 pm',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  SizedBox(width: 5),
+                                  Text(
+                                    '18:45 pm',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

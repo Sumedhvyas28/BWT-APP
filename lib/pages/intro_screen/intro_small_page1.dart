@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 
-class IntroPage1 extends StatelessWidget {
-  const IntroPage1({super.key});
+class IntroSmallPage1 extends StatefulWidget {
+  const IntroSmallPage1({super.key});
 
+  @override
+  State<IntroSmallPage1> createState() => _IntroSmallPage1State();
+}
+
+class _IntroSmallPage1State extends State<IntroSmallPage1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // Logo and title
           Positioned(
-            top: 93,
+            top: 60,
             left: 0,
             right: 0,
             child: Column(
@@ -18,7 +24,7 @@ class IntroPage1 extends StatelessWidget {
                 // Logo
                 Image.asset(
                   'assets/logos/logo.png',
-                  height: 79,
+                  height: 60,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 8),
@@ -33,44 +39,46 @@ class IntroPage1 extends StatelessWidget {
               ],
             ),
           ),
+          // Main image
           Positioned(
             top: 140,
             left: 0,
             right: 0,
             child: Image.asset(
               'assets/images/first_1.png',
-              height: 420,
+              height: 300,
             ),
           ),
-          const Positioned(
-            top: 550,
+          // Text content
+          Positioned(
+            top: 430,
             left: 20,
             right: 20,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
-                  'Seamless Workflow',
+                  'Easy Job Scheduling',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 15),
                 Text(
-                  'Streamline your processes effortlessly.',
+                  'Get all your daily jobs organized in one place.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 14),
                 ),
                 Text(
-                  'Improve productivity manage efficiently.',
-                  style: TextStyle(fontSize: 16),
+                  'Place your tasks in order and stay focused.',
+                  style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  'Achieve your goals with ease!',
-                  style: TextStyle(fontSize: 16),
+                  'Deliver quality service!',
+                  style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
               ],

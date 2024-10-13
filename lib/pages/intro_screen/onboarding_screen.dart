@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+
 import 'package:flutter_application_1/pages/intro_screen/intro_screen_1.dart';
 import 'package:flutter_application_1/pages/intro_screen/intro_screen_2.dart';
 import 'package:flutter_application_1/pages/intro_screen/intro_screen_3.dart';
+import 'package:flutter_application_1/pages/intro_screen/intro_small_page1.dart';
+import 'package:flutter_application_1/pages/intro_screen/intro_small_page2.dart';
+import 'package:flutter_application_1/pages/intro_screen/intro_small_page3.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -16,33 +20,25 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   bool onLastPage = false;
-  bool showDone = false;
   int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    // Define breakpoints
-    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
 
-    double bottomIndicatorPosition;
-    double buttonBottomPosition;
-    double buttonFontSize;
-
-    if (screenWidth <= 360) {
-      // Small phone
-      bottomIndicatorPosition = 150;
-      buttonBottomPosition = 30;
-      buttonFontSize = 14;
-    } else if (screenWidth <= 600) {
-      // Medium phone
-      bottomIndicatorPosition = 180;
-      buttonBottomPosition = 40;
-      buttonFontSize = 16;
+    List<Widget> introPages;
+    if (screenHeight <= 800) {
+      introPages = const [
+        IntroSmallPage1(),
+        IntroSmallPage2(),
+        IntroSmallPage3(),
+      ];
     } else {
-      // Large phone
-      bottomIndicatorPosition = 200;
-      buttonBottomPosition = 50;
-      buttonFontSize = 18;
+      introPages = const [
+        IntroPage1(),
+        IntroPage2(),
+        IntroPage3(),
+      ];
     }
 
     return Scaffold(
@@ -54,26 +50,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               setState(() {
                 currentPageIndex = index;
                 onLastPage = (index == 2);
-                if (index != 2) {
-                  showDone = false;
-                }
               });
             },
-            children: const [
-              IntroPage1(),
-              IntroPage2(),
-              IntroPage3(),
-            ],
+            children: introPages,
           ),
           Positioned(
-            bottom: bottomIndicatorPosition,
+            bottom: 100,
             left: 0,
             right: 0,
             child: Center(
               child: SmoothPageIndicator(
                 controller: _controller,
-                count: 3,
-                effect: ExpandingDotsEffect(
+                count: introPages.length,
+                effect: const ExpandingDotsEffect(
                   dotHeight: 7,
                   dotWidth: 5,
                   spacing: 10,
@@ -84,7 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
           Positioned(
-            bottom: buttonBottomPosition,
+            bottom: 25,
             left: 30,
             right: 30,
             child: Row(
@@ -103,16 +92,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     currentPageIndex == 0 ? 'SKIP' : 'BACK',
-                    style: TextStyle(fontSize: buttonFontSize),
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (onLastPage && !showDone) {
-                      setState(() {
-                        showDone = true;
-                      });
-                    } else if (onLastPage && showDone) {
+                    if (onLastPage) {
                       context.go('/login');
                     } else {
                       _controller.nextPage(
@@ -122,8 +107,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     }
                   },
                   child: Text(
-                    onLastPage && showDone ? 'LET\'S GET STARTED' : 'NEXT',
-                    style: TextStyle(fontSize: buttonFontSize),
+                    onLastPage ? 'LET\'S GET STARTED' : 'NEXT',
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ),
               ],
