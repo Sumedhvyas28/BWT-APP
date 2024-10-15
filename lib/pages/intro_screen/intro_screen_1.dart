@@ -7,6 +7,7 @@ class IntroPage1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned(
@@ -50,26 +51,27 @@ class IntroPage1 extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
-                  'Seamless Workflow',
+                  'Easy Job Scheduling',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
+                    color: Pallete.mainFontColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 15),
                 Text(
-                  'Streamline your processes effortlessly.',
+                  'Get all your daily jobs organized in one place.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
-                  'Improve productivity manage efficiently.',
+                  'Place your tasks in order and stay focused.',
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  'Achieve your goals with ease!',
+                  'Deliver quality service!',
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),

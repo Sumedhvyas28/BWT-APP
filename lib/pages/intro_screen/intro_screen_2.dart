@@ -7,6 +7,7 @@ class IntroPage2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned(
@@ -50,10 +51,11 @@ class IntroPage2 extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
-                  'Easy Job Scheduling',
+                  'Quick Maintenance logs',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
+                    color: Pallete.mainFontColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

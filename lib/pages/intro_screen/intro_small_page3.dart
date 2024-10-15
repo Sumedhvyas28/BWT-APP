@@ -12,6 +12,7 @@ class _IntroSmallPage3State extends State<IntroSmallPage3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned(
@@ -29,7 +30,7 @@ class _IntroSmallPage3State extends State<IntroSmallPage3> {
                 const Text(
                   'Field Service Management',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: Pallete.mainFontColor,
                   ),
@@ -49,21 +50,22 @@ class _IntroSmallPage3State extends State<IntroSmallPage3> {
           ),
           // Text content
           Positioned(
-            top: 430,
+            top: 420,
             left: 20,
             right: 20,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: const [
                 Text(
-                  'Easy Job Scheduling',
+                  'Access Job History',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
+                    color: Pallete.mainFontColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 15),
+                SizedBox(height: 5),
                 Text(
                   'Get all your daily jobs organized in one place.',
                   textAlign: TextAlign.center,

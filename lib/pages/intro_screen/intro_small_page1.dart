@@ -12,6 +12,7 @@ class _IntroSmallPage1State extends State<IntroSmallPage1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           // Logo and title
@@ -31,7 +32,7 @@ class _IntroSmallPage1State extends State<IntroSmallPage1> {
                 const Text(
                   'Field Service Management',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: Pallete.mainFontColor,
                   ),
@@ -51,7 +52,7 @@ class _IntroSmallPage1State extends State<IntroSmallPage1> {
           ),
           // Text content
           Positioned(
-            top: 430,
+            top: 420,
             left: 20,
             right: 20,
             child: Column(
@@ -62,10 +63,11 @@ class _IntroSmallPage1State extends State<IntroSmallPage1> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
+                    color: Pallete.mainFontColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 15),
+                SizedBox(height: 5),
                 Text(
                   'Get all your daily jobs organized in one place.',
                   textAlign: TextAlign.center,

@@ -25,8 +25,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-
-    List<Widget> introPages;
+    List<Widget> introPages = [
+      IntroPage1(),
+      IntroPage2(),
+      IntroPage3(),
+    ];
     if (screenHeight <= 800) {
       introPages = const [
         IntroSmallPage1(),
@@ -61,7 +64,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Center(
               child: SmoothPageIndicator(
                 controller: _controller,
-                count: introPages.length,
+                // count: introPages.length,
+                count: 3,
                 effect: const ExpandingDotsEffect(
                   dotHeight: 7,
                   dotWidth: 5,

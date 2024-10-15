@@ -88,6 +88,7 @@ class _AddSymptomsState extends State<AddSymptoms> {
           padding: const EdgeInsets.all(8),
           child: Card(
             elevation: 3,
+            color: Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(9),
               child: Column(
@@ -121,7 +122,9 @@ class _AddSymptomsState extends State<AddSymptoms> {
                       SizedBox(width: 5),
                       Text(
                         'Add attachments',
-                        style: TextStyle(color: Pallete.iconAddColor),
+                        style: TextStyle(
+                          color: Pallete.iconAddColor,
+                        ),
                       ),
                     ],
                   ),

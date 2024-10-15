@@ -220,7 +220,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Customer Query',
+                          'Customer Query (Issues)',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -255,7 +255,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'Customer Query',
+                          'SOP\'s',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -336,7 +336,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                       children: [
                         const SizedBox(height: 20),
                         const Text(
-                          'Customer Query',
+                          'Primary Assets (To be collected)',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
