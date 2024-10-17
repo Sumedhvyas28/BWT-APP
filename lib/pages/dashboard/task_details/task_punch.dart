@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/custom_appbar.dart';
+import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached_location.dart';
+import 'package:page_transition/page_transition.dart';
 
 // 300 m not visible
 class TaskPunch extends StatefulWidget {
@@ -36,7 +37,7 @@ class TaskPunchState extends State<TaskPunch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Task Details'),
+      appBar: CustomDashApp(title: 'Task Details'),
       backgroundColor: Colors.white,
       body: Container(
         child: Padding(
@@ -135,11 +136,11 @@ class TaskPunchState extends State<TaskPunch> {
                         )),
                     onPressed: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ReachedLocation(),
-                        ),
-                      );
+                          context,
+                          PageTransition(
+                            child: ReachedLocation(),
+                            type: PageTransitionType.fade,
+                          ));
                     },
                     child: const Text(
                       'REACHED TO LOCATION',

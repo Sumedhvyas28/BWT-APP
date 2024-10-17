@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
+import 'package:page_transition/page_transition.dart';
 
 // pending
-// fully logic for schedule task had to be don
+// fully logic for schedule task had to be done
 
 class TasksPage extends StatelessWidget {
-  const TasksPage({super.key});
+  TasksPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +16,36 @@ class TasksPage extends StatelessWidget {
     );
   }
 
+  // Dummy data  FOR NOW MAKE MODELS FOR THESE
+  final List<Map<String, dynamic>> tasks = [
+    {
+      'status': 'completed',
+      'time': '1:00 PM',
+      'endTime': '2:00 PM',
+      'buttonColor': Colors.green,
+      'buttonText': 'Completed'
+    },
+    {
+      'status': 'pending',
+      'time': '3:00 PM',
+      'endTime': '4:00 PM',
+      'buttonColor': Colors.red,
+      'buttonText': 'Pending'
+    },
+    {
+      'status': 'in-progress',
+      'time': '6:00 PM',
+      'endTime': '7:00 PM',
+      'buttonColor': Colors.orange,
+      'buttonText': 'Delayed'
+    },
+  ];
+
   Widget _buildTasks() {
     return ListView.builder(
-      itemCount: 3,
+      itemCount: tasks.length,
       itemBuilder: (context, index) {
+        final task = tasks[index];
         return Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 20,
@@ -31,9 +58,9 @@ class TasksPage extends StatelessWidget {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '10:00 AM',
-                      style: TextStyle(
+                    Text(
+                      task['time'],
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -46,9 +73,9 @@ class TasksPage extends StatelessWidget {
                       color: Colors.black,
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      '11:00 AM',
-                      style: TextStyle(
+                    Text(
+                      task['endTime'],
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -61,9 +88,12 @@ class TasksPage extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const TaskDetails()));
+                        context,
+                        PageTransition(
+                          child: TaskDetails(),
+                          type: PageTransitionType.fade,
+                        ),
+                      );
                     },
                     child: Card(
                       elevation: 3,
@@ -104,23 +134,23 @@ class TasksPage extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
+                                const SizedBox(width: 15),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    // Handle button click logic
+                                  },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: task['buttonColor'],
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 0),
+                                        horizontal: 10, vertical: 0),
                                     minimumSize: const Size(40, 30),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: Text(
-                                    'Complete',
-                                    style: const TextStyle(
+                                    task['buttonText'],
+                                    style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.white,
                                     ),
@@ -136,27 +166,26 @@ class TasksPage extends StatelessWidget {
                                     Icon(Icons.account_circle_rounded,
                                         size: 16),
                                     SizedBox(width: 5),
-                                    Text('Created by: Sumedh',
+                                    Text('Created by  : Sumedh',
                                         style: TextStyle(fontSize: 11)),
                                   ],
                                 ),
                                 SizedBox(height: 5),
                                 Row(
                                   children: [
-                                    Icon(Icons.account_circle_rounded,
-                                        size: 16),
+                                    Icon(Icons.info, size: 16),
                                     SizedBox(width: 5),
-                                    Text('Created by: Sumedh',
+                                    Text('Description:  Lab Sample Collection',
                                         style: TextStyle(fontSize: 11)),
                                   ],
                                 ),
                                 SizedBox(height: 5),
                                 Row(
                                   children: [
-                                    Icon(Icons.account_circle_rounded,
-                                        size: 16),
+                                    Icon(Icons.location_on, size: 16),
                                     SizedBox(width: 5),
-                                    Text('Created by: Sumedh',
+                                    Text(
+                                        'Location     :  48A Cua Bac,Tan Phu Dist',
                                         style: TextStyle(fontSize: 11)),
                                   ],
                                 ),

@@ -26,9 +26,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     List<Widget> introPages = [
-      IntroPage1(),
-      IntroPage2(),
-      IntroPage3(),
+      const IntroPage1(),
+      const IntroPage2(),
+      const IntroPage3(),
     ];
     if (screenHeight <= 800) {
       introPages = const [
@@ -90,7 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     } else {
                       _controller.previousPage(
                         duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeIn,
+                        curve: Curves.fastEaseInToSlowEaseOut,
                       );
                     }
                   },
@@ -106,7 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     } else {
                       _controller.nextPage(
                         duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeIn,
+                        curve: Curves.fastEaseInToSlowEaseOut,
                       );
                     }
                   },

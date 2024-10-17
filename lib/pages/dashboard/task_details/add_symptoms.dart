@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/custom_appbar.dart';
+import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 
 // pending
@@ -19,7 +19,7 @@ class _AddSymptomsState extends State<AddSymptoms> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: 'Task Details'),
+      appBar: CustomDashApp(title: 'Symptoms'),
       body: SingleChildScrollView(
         child: Column(
           children: [

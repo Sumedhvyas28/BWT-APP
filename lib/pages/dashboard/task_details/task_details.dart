@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/custom_appbar.dart';
+import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/pages/dashboard/task_details/task_punch.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/blank_Delivery.dart';
+import 'package:page_transition/page_transition.dart';
 
 class TaskDetails extends StatefulWidget {
   const TaskDetails({super.key});
@@ -19,7 +20,7 @@ class _TaskDetailsState extends State<TaskDetails> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar(title: 'Task Details'),
+      appBar: CustomDashApp(title: 'Task Details'),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -52,7 +53,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                               Text(
                                 'Sumedh Vyas',
                                 style: TextStyle(
-                                  fontSize: 18, // Keep text size static
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -60,21 +61,21 @@ class _TaskDetailsState extends State<TaskDetails> {
                               Text(
                                 'Customer Service Address',
                                 style: TextStyle(
-                                  fontSize: 12, // Keep text size static
+                                  fontSize: 12,
                                 ),
                               ),
                               SizedBox(height: 5),
                               Text(
                                 'House No 3, plus Cross',
                                 style: TextStyle(
-                                  fontSize: 18, // Keep text size static
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Street, South Vietnam',
                                 style: TextStyle(
-                                  fontSize: 18, // Keep text size static
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -106,7 +107,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                   // 1st card
                   Expanded(
                     child: SizedBox(
-                      height: 121, // Fixed height
+                      height: 121,
                       child: Card(
                         elevation: 3,
                         color: Colors.white,
@@ -151,11 +152,11 @@ class _TaskDetailsState extends State<TaskDetails> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10), // Spacer between cards
+                  const SizedBox(width: 10),
                   // 2nd card
                   Expanded(
                     child: SizedBox(
-                      height: 121, // Fixed height
+                      height: 121,
                       child: Card(
                         elevation: 3,
                         color: Colors.white,
@@ -418,11 +419,11 @@ class _TaskDetailsState extends State<TaskDetails> {
                       )),
                   onPressed: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TaskPunch(),
-                      ),
-                    );
+                        context,
+                        PageTransition(
+                          child: BlankDeliveryPage(),
+                          type: PageTransitionType.fade,
+                        ));
                   },
                   child: const Text(
                     'Going For Visit',

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/custom_appbar.dart';
+import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/drawer.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/add_symptoms.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/look_symptoms.dart';
+import 'package:page_transition/page_transition.dart';
 
 //pending
 // punch in button functionality to be changed
@@ -32,7 +33,7 @@ class _ReachedLocationState extends State<ReachedLocation> {
     return Scaffold(
       backgroundColor: Colors.white,
       //appbar
-      appBar: CustomAppBar(title: 'Task Details'),
+      appBar: CustomDashApp(title: 'Task Details'),
       drawer: DrawerPage(),
 
       body: Padding(
@@ -159,12 +160,11 @@ class _ReachedLocationState extends State<ReachedLocation> {
                               ),
                               onPressed: () {
                                 Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LookForSymptoms(),
-                                  ),
-                                );
+                                    context,
+                                    PageTransition(
+                                      child: LookForSymptoms(),
+                                      type: PageTransitionType.fade,
+                                    ));
                               },
                             ),
                             IconButton(
@@ -175,11 +175,11 @@ class _ReachedLocationState extends State<ReachedLocation> {
                               ),
                               onPressed: () {
                                 Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AddSymptoms(),
-                                  ),
-                                );
+                                    context,
+                                    PageTransition(
+                                      child: AddSymptoms(),
+                                      type: PageTransitionType.fade,
+                                    ));
                               },
                             ),
                           ],

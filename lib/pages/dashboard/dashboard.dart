@@ -88,7 +88,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           Expanded(
             child: Center(
-              child: isSelected[0] ? const TasksPage() : const ClientsPage(),
+              child: isSelected[0] ? TasksPage() : const ClientsPage(),
             ),
           ),
         ],
