@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/shimmer_page.dart';
 import 'package:page_transition/page_transition.dart';
 
 // pending
@@ -90,7 +90,7 @@ class TasksPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         PageTransition(
-                          child: TaskDetails(),
+                          child: ShimmerWidgetPage(),
                           type: PageTransitionType.fade,
                         ),
                       );

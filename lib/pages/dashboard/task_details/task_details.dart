@@ -13,6 +13,7 @@ class TaskDetails extends StatefulWidget {
 
 class _TaskDetailsState extends State<TaskDetails> {
   List<bool> isSelected = [false, false, false];
+  // bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +257,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                       children: [
                         SizedBox(height: 20),
                         Text(
-                          'SOP\'s',
+                          'Maintenance Master Section',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -337,7 +338,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                       children: [
                         const SizedBox(height: 20),
                         const Text(
-                          'Primary Assets (To be collected)',
+                          'Spare Items',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

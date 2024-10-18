@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/pages/dashboard/task_details/reached_location.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/reached_location.dart';
 import 'package:page_transition/page_transition.dart';
 
 // 300 m not visible

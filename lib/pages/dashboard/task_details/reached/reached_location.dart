@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/drawer.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/pages/dashboard/task_details/add_symptoms.dart';
-import 'package:flutter_application_1/pages/dashboard/task_details/look_symptoms.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/add_symptoms.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/look_symptoms.dart';
 import 'package:page_transition/page_transition.dart';
 
 //pending
@@ -26,6 +27,26 @@ class _ReachedLocationState extends State<ReachedLocation> {
 
   bool _isPunchPressed = false;
   bool _isPunchOutPressed = false;
+  bool isRescheduled = false;
+  String _isPunchOutMessage = '';
+
+  void _handlePunchOut() {
+    if (isSelected[0] && isSelected[1] && isSelected[2] && isSelected[3]) {
+      setState(() {
+        _isPunchOutPressed = true;
+
+        _isPunchOutMessage = 'Job Punch OUT Successful! AT 16:00 PM';
+      });
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertPage();
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // double screenWidth = MediaQuery.of(context).size.width;
@@ -612,11 +633,7 @@ class _ReachedLocationState extends State<ReachedLocation> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isPunchOutPressed = !_isPunchOutPressed;
-                    });
-                  },
+                  onPressed: _handlePunchOut,
                   child: Text(
                     _isPunchOutPressed ? 'PUNCHED OUT' : 'PUNCH OUT',
                     style: const TextStyle(
@@ -629,8 +646,8 @@ class _ReachedLocationState extends State<ReachedLocation> {
 
               if (_isPunchOutPressed)
                 Center(
-                  child: const Text(
-                    'Job Punch OUT Successful! AT 16:00 PM',
+                  child: Text(
+                    _isPunchOutMessage,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
