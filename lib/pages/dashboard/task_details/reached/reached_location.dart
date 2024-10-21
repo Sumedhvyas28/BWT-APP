@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/drawer.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/models/product_list.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/add_symptoms.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/look_symptoms.dart';
@@ -18,23 +19,21 @@ class ReachedLocation extends StatefulWidget {
 }
 
 class _ReachedLocationState extends State<ReachedLocation> {
-  List<bool> isSelected = [
-    false,
-    false,
-    false,
-    false
-  ]; // List for checkbox states
-
   bool _isPunchPressed = false;
   bool _isPunchOutPressed = false;
   bool isRescheduled = false;
   String _isPunchOutMessage = '';
 
+  List<Map<String, dynamic>> removedProducts = []; // List for removed products
+
   void _handlePunchOut() {
-    if (isSelected[0] && isSelected[1] && isSelected[2] && isSelected[3]) {
+    // Check if any product is not selected
+    bool anyNotSelected =
+        productList.any((product) => product['isSelected'] == false);
+
+    if (!anyNotSelected) {
       setState(() {
         _isPunchOutPressed = true;
-
         _isPunchOutMessage = 'Job Punch OUT Successful! AT 16:00 PM';
       });
     } else {
@@ -47,7 +46,6 @@ class _ReachedLocationState extends State<ReachedLocation> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     // double screenWidth = MediaQuery.of(context).size.width;
     // double screenHeight = MediaQuery.of(context).size.height;
@@ -57,9 +55,9 @@ class _ReachedLocationState extends State<ReachedLocation> {
       appBar: CustomDashApp(title: 'Task Details'),
       drawer: DrawerPage(),
 
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -148,397 +146,32 @@ class _ReachedLocationState extends State<ReachedLocation> {
                 height: 10,
               ),
               // Product Row
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: const Color.fromARGB(255, 255, 255, 255)
-                          .withOpacity(0.5)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'PRODUCT 1',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Pallete.mainFontColor,
-                          ),
-                        ),
-                        // Icons
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.search,
-                                color: Pallete.mainFontColor,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      child: LookForSymptoms(),
-                                      type: PageTransitionType.fade,
-                                    ));
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.maps_ugc,
-                                color: Pallete.mainFontColor,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      child: AddSymptoms(),
-                                      type: PageTransitionType.fade,
-                                    ));
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSelected[0],
-                          onChanged: (value) {
-                            setState(() {
-                              isSelected[0] = value!;
-                            });
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'This is a description for Product 1.This is a description for Product 1.  ',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle_rounded,
-                            color: Pallete.iconAddColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Add attachements',
-                          style: TextStyle(
-                            color: Pallete.iconAddColor,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.location_pin,
-                            color: Pallete.iconMapColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Product Location',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconMapColor,
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              //below this everyting is copy paste of above container
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    height: 400,
+                    child: ListView.builder(
+                        itemCount: productList.length +
+                            removedProducts.length, // Total count
 
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: const Color.fromARGB(255, 255, 255, 255)
-                          .withOpacity(0.5)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'PRODUCT 2',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Pallete.mainFontColor,
-                          ),
-                        ),
-                        // Icons
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.search,
-                                color: Pallete.mainFontColor,
-                                size: 30,
-                              ),
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.maps_ugc,
-                                color: Pallete.mainFontColor,
-                                size: 30,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSelected[1],
-                          onChanged: (value) {
-                            setState(() {
-                              isSelected[1] = value!;
-                            });
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'This is a description for Product 1.This is a description for Product 1.  ',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle_rounded,
-                            color: Pallete.iconAddColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Add attachements',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconAddColor,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.location_pin,
-                            color: Pallete.iconMapColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Product Location',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconMapColor,
-                          ),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSelected[2],
-                          onChanged: (value) {
-                            setState(() {
-                              isSelected[2] = value!;
-                            });
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'This is a description for Product 1.This is a description for Product 1.  ',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle_rounded,
-                            color: Pallete.iconAddColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Add attachements',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconAddColor,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.location_pin,
-                            color: Pallete.iconMapColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Product Location',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconMapColor,
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+                        shrinkWrap: true,
+                        padding: EdgeInsets.all(8),
+                        itemBuilder: (context, index) {
+                          if (index < productList.length) {
+                            return _buildProductCard(
+                                context, productList[index], index);
+                          } else {
+                            // Display removed products
+                            final removedIndex = index - productList.length;
+                            return _buildRemovedProductCard(
+                                context, removedProducts[removedIndex]);
+                          }
+                        }),
+                  ),
+                ],
               ),
 
-              //3rd
-              Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: const Color.fromARGB(255, 255, 255, 255)
-                          .withOpacity(0.5)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'PRODUCT 3',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Pallete.mainFontColor,
-                          ),
-                        ),
-                        // Icons
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.search,
-                                color: Pallete.mainFontColor,
-                                size: 30,
-                              ),
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.maps_ugc,
-                                color: Pallete.mainFontColor,
-                                size: 30,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSelected[3],
-                          onChanged: (value) {
-                            setState(() {
-                              isSelected[3] = value!;
-                            });
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'This is a description for Product 1.This is a description for Product 1.  ',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle_rounded,
-                            color: Pallete.iconAddColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Add attachements',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconAddColor,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.location_pin,
-                            color: Pallete.iconMapColor,
-                            size: 30,
-                          ),
-                          onPressed: () {},
-                        ),
-                        const Text(
-                          'Product Location',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Pallete.iconMapColor,
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-
-              // attachment card
               const Card(
                 color: Colors.white,
                 elevation: 3,
@@ -658,6 +291,172 @@ class _ReachedLocationState extends State<ReachedLocation> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProductCard(
+      BuildContext context, Map<String, dynamic> product, int index) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(
+              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  product['name'],
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Pallete.mainFontColor,
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.search,
+                        color: Pallete.mainFontColor,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: LookForSymptoms(),
+                            type: PageTransitionType.fade,
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.maps_ugc,
+                        color: Pallete.mainFontColor,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            child: AddSymptoms(),
+                            type: PageTransitionType.fade,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                Checkbox(
+                  value: product['isSelected'],
+                  onChanged: (value) {
+                    setState(() {
+                      product['isSelected'] = value!;
+                      if (value) {
+                        // Move product to removedProducts
+                        removedProducts.add(productList.removeAt(index));
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    product['description'],
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.add_circle_rounded,
+                    color: Pallete.iconAddColor,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    // Handle add attachments functionality
+                  },
+                ),
+                const Text(
+                  'Add attachments',
+                  style: TextStyle(
+                    color: Pallete.iconAddColor,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                IconButton(
+                  icon: const Icon(
+                    Icons.location_pin,
+                    color: Pallete.iconMapColor,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    // Handle location functionality
+                  },
+                ),
+                const Text(
+                  'Product Location',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Pallete.iconMapColor,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRemovedProductCard(
+      BuildContext context, Map<String, dynamic> product) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          IconButton(
+            icon: const Icon(
+              Icons.add_circle_rounded,
+              color: Pallete.mainFontColor, // Color for restore button
+              size: 30,
+            ),
+            onPressed: () {
+              setState(() {
+                productList.add(removedProducts.removeAt(
+                    removedProducts.indexOf(product))); // Restore product
+              });
+            },
+          ),
+          Text(
+            product['name'],
+            style: const TextStyle(
+              fontSize: 20,
+              color: Pallete.mainFontColor,
+            ),
+          ),
+        ],
       ),
     );
   }

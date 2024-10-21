@@ -31,7 +31,7 @@ class _AlertPageState extends State<AlertPage> {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return ReasonPage();
+                          return const ReasonPage();
                         });
                   },
                   child: Text(
