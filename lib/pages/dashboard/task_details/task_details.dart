@@ -12,8 +12,57 @@ class TaskDetails extends StatefulWidget {
 }
 
 class _TaskDetailsState extends State<TaskDetails> {
-  List<bool> isSelected = [false, false, false];
+  final List<String> items = [
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+  ];
+
+  // Track selection status
+  List<bool> isSelected = List.filled(3, false); // Adjust the size as needed
   // bool _isLoading = false;
+
+  void _checkAndNavigate() {
+    // Check if all checkboxes are unchecked
+    if (isSelected.contains(false)) {
+      // Show alert dialog if no checkbox is selected
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Center(
+            child: Text(
+              "No Selection",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: Text(
+            "Please select at least one item before proceeding.",
+            style: TextStyle(fontSize: 20),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                "OK",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Proceed with normal navigation
+      Navigator.push(
+        context,
+        PageTransition(
+          child: BlankDeliveryPage(),
+          type: PageTransitionType.fade,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -345,71 +394,36 @@ class _TaskDetailsState extends State<TaskDetails> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: isSelected[0],
-                              onChanged: (newBool) {
-                                setState(() {
-                                  isSelected[0] = newBool!;
-                                });
-                              },
-                            ),
-                            Expanded(
-                              child: Text(
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. fklfkhwq fqlfqmf qjofqf ;lmqqlf ;q',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: isSelected[1],
-                              onChanged: (newBool) {
-                                setState(() {
-                                  isSelected[1] = newBool!;
-                                });
-                              },
-                            ),
-                            Expanded(
-                              child: Text(
-                                'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: isSelected[2],
-                              onChanged: (newBool) {
-                                setState(() {
-                                  isSelected[2] = newBool!;
-                                });
-                              },
-                            ),
-                            const Expanded(
-                              child: Text(
-                                'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ],
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Checkbox(
+                                    value: isSelected[index],
+                                    onChanged: (newBool) {
+                                      setState(() {
+                                        isSelected[index] = newBool!;
+                                      });
+                                    },
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      items[index],
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-
               Container(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -418,14 +432,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       )),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                          child: BlankDeliveryPage(),
-                          type: PageTransitionType.fade,
-                        ));
-                  },
+                  onPressed: _checkAndNavigate,
                   child: const Text(
                     'Going For Visit',
                     style: TextStyle(

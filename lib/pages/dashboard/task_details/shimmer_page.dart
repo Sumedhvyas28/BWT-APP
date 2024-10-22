@@ -158,21 +158,4 @@ class _ShimmerWidgetPageState extends State<ShimmerWidgetPage> {
 }
 
 // Next Page widget to redirect to
-class NextPage extends StatelessWidget {
-  const NextPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Next Page'),
-      ),
-      body: Center(
-        child: const Text(
-          'Welcome to the Next Page!',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}

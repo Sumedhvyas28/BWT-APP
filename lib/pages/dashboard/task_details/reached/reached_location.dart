@@ -5,6 +5,7 @@ import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/models/product_list.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/add_symptoms.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/error_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/look_symptoms.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -23,15 +24,22 @@ class _ReachedLocationState extends State<ReachedLocation> {
   bool _isPunchOutPressed = false;
   bool isRescheduled = false;
   String _isPunchOutMessage = '';
+  List<Map<String, dynamic>> removedDescriptions = [];
 
   List<Map<String, dynamic>> removedProducts = []; // List for removed products
 
   void _handlePunchOut() {
-    // Check if any product is not selected
-    bool anyNotSelected =
-        productList.any((product) => product['isSelected'] == false);
+    // Extracting the selection condition
+    var selectionStatus = checkDescriptionSelections(productList);
 
-    if (!anyNotSelected) {
+    bool allSelected = selectionStatus['allSelected']!;
+    bool anyDescriptionNotSelected =
+        selectionStatus['anyDescriptionNotSelected']!;
+
+    print('anyDescriptionNotSelected: $anyDescriptionNotSelected');
+    print('allSelected: $allSelected');
+
+    if (allSelected && _isPunchPressed) {
       setState(() {
         _isPunchOutPressed = true;
         _isPunchOutMessage = 'Job Punch OUT Successful! AT 16:00 PM';
@@ -40,12 +48,16 @@ class _ReachedLocationState extends State<ReachedLocation> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertPage();
+          if (!_isPunchPressed) {
+            return ErrorPage();
+          } else
+            return AlertPage();
         },
       );
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     // double screenWidth = MediaQuery.of(context).size.width;
     // double screenHeight = MediaQuery.of(context).size.height;
@@ -152,22 +164,22 @@ class _ReachedLocationState extends State<ReachedLocation> {
                   SizedBox(
                     height: 400,
                     child: ListView.builder(
-                        itemCount: productList.length +
-                            removedProducts.length, // Total count
-
-                        shrinkWrap: true,
-                        padding: EdgeInsets.all(8),
-                        itemBuilder: (context, index) {
-                          if (index < productList.length) {
-                            return _buildProductCard(
-                                context, productList[index], index);
-                          } else {
-                            // Display removed products
-                            final removedIndex = index - productList.length;
-                            return _buildRemovedProductCard(
-                                context, removedProducts[removedIndex]);
-                          }
-                        }),
+                      shrinkWrap: true,
+                      physics:
+                          const AlwaysScrollableScrollPhysics(), // Allow scrolling
+                      itemCount:
+                          productList.length + removedDescriptions.length,
+                      itemBuilder: (context, index) {
+                        if (index < productList.length) {
+                          return _buildProductCard(
+                              context, productList[index], index);
+                        } else {
+                          int removedIndex = index - productList.length;
+                          return _buildRemovedDescriptionCard(
+                              context, removedDescriptions[removedIndex]);
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -297,6 +309,11 @@ class _ReachedLocationState extends State<ReachedLocation> {
 
   Widget _buildProductCard(
       BuildContext context, Map<String, dynamic> product, int index) {
+    // Hide the product card if there are no descriptions left
+    if (product['description'].isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -315,20 +332,15 @@ class _ReachedLocationState extends State<ReachedLocation> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  product['name'],
+                  product['name'] ?? 'Unknown Product',
                   style: const TextStyle(
                     fontSize: 20,
-                    color: Pallete.mainFontColor,
+                    color: Colors.black,
                   ),
                 ),
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(
-                        Icons.search,
-                        color: Pallete.mainFontColor,
-                        size: 30,
-                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -338,13 +350,13 @@ class _ReachedLocationState extends State<ReachedLocation> {
                           ),
                         );
                       },
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.maps_ugc,
+                      icon: Icon(
+                        Icons.search,
                         color: Pallete.mainFontColor,
                         size: 30,
                       ),
+                    ),
+                    IconButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -354,73 +366,57 @@ class _ReachedLocationState extends State<ReachedLocation> {
                           ),
                         );
                       },
-                    ),
+                      icon: Icon(
+                        Icons.maps_ugc,
+                        color: Pallete.mainFontColor,
+                        size: 30,
+                      ),
+                    )
                   ],
-                ),
+                )
               ],
             ),
             const SizedBox(height: 5),
-            Row(
-              children: [
-                Checkbox(
-                  value: product['isSelected'],
-                  onChanged: (value) {
-                    setState(() {
-                      product['isSelected'] = value!;
-                      if (value) {
-                        // Move product to removedProducts
-                        removedProducts.add(productList.removeAt(index));
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    product['description'],
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.add_circle_rounded,
-                    color: Pallete.iconAddColor,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    // Handle add attachments functionality
-                  },
-                ),
-                const Text(
-                  'Add attachments',
-                  style: TextStyle(
-                    color: Pallete.iconAddColor,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                IconButton(
-                  icon: const Icon(
-                    Icons.location_pin,
-                    color: Pallete.iconMapColor,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    // Handle location functionality
-                  },
-                ),
-                const Text(
-                  'Product Location',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Pallete.iconMapColor,
-                  ),
-                ),
-              ],
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: product['description'].length,
+              itemBuilder: (context, descIndex) {
+                return Row(
+                  children: [
+                    Checkbox(
+                      value: product['descriptionSelections'][descIndex],
+                      onChanged: (value) {
+                        setState(() {
+                          product['descriptionSelections'][descIndex] = value!;
+
+                          // Move description to removed list if checked
+                          if (value) {
+                            removedDescriptions.add({
+                              'productName': product['name'],
+                              'description': product['description'][descIndex],
+                              'productIndex': index,
+                              'descIndex': descIndex,
+                            });
+
+                            // Remove description from the original product
+                            product['description'].removeAt(descIndex);
+                            product['descriptionSelections']
+                                .removeAt(descIndex);
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        product['description'][descIndex],
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -428,33 +424,43 @@ class _ReachedLocationState extends State<ReachedLocation> {
     );
   }
 
-  Widget _buildRemovedProductCard(
-      BuildContext context, Map<String, dynamic> product) {
+  Widget _buildRemovedDescriptionCard(
+      BuildContext context, Map<String, dynamic> removedItem) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Column(
         children: [
-          IconButton(
-            icon: const Icon(
-              Icons.add_circle_rounded,
-              color: Pallete.mainFontColor, // Color for restore button
-              size: 30,
-            ),
-            onPressed: () {
-              setState(() {
-                productList.add(removedProducts.removeAt(
-                    removedProducts.indexOf(product))); // Restore product
-              });
-            },
-          ),
-          Text(
-            product['name'],
-            style: const TextStyle(
-              fontSize: 20,
-              color: Pallete.mainFontColor,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Checkbox(
+                value: true,
+                onChanged: (value) {
+                  setState(() {
+                    int productIndex = removedItem['productIndex'];
+
+                    productList[productIndex]['description'].insert(
+                        removedItem['descIndex'], removedItem['description']);
+                    productList[productIndex]['descriptionSelections']
+                        .insert(removedItem['descIndex'], false);
+
+                    // Remove from the removed descriptions list
+                    removedDescriptions.remove(removedItem);
+                  });
+                },
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  "${removedItem['productName']} - ${removedItem['description']}",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Pallete.mainFontColor,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
