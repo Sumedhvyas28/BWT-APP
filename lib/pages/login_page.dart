@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart';
 
 // check box
 // height check
@@ -14,6 +15,29 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late Size mediaSize;
   bool _isPasswordHidden = true; // for pass
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void login(String email, password) async {
+    try {
+      Response response = await post(
+        Uri.parse('https://reqres.in/api/login'),
+        body: {
+          'email': email,
+          'password': password,
+        },
+      );
+      if (response.statusCode == 200) {
+        print('account created successfully');
+        GoRouter.of(context).go('/home');
+      } else {
+        print('failed lulul');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +132,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButton() {
     return ElevatedButton(
         onPressed: () {
-          GoRouter.of(context).go('/home');
+          login(emailController.text.toString(),
+              passwordController.text.toString());
+          // GoRouter.of(context).go('/home');
         },
         style: ElevatedButton.styleFrom(
           shape: const StadiumBorder(),
@@ -184,6 +210,7 @@ class _LoginPageState extends State<LoginPage> {
 // skeleton for input field
   Widget _buildGreyText(String text) {
     return TextField(
+      controller: emailController,
       decoration: InputDecoration(
         hintText: text,
         border: OutlineInputBorder(
@@ -202,6 +229,7 @@ class _LoginPageState extends State<LoginPage> {
   // password show / hide field
   Widget _buildPasswordTextField(String text) {
     return TextField(
+      controller: passwordController,
       obscureText: _isPasswordHidden,
       decoration: InputDecoration(
         hintText: text,
