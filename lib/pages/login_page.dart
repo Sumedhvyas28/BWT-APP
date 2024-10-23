@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:go_router/go_router.dart';
@@ -19,23 +21,37 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  void login(String email, password) async {
+  void login(String email, String password) async {
     try {
       Response response = await post(
-        Uri.parse('https://reqres.in/api/login'),
+        Uri.parse(
+          'https://ad1e-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.login',
+        ),
         body: {
           'email': email,
           'password': password,
         },
       );
-      if (response.statusCode == 200) {
-        print('account created successfully');
+
+      var data = jsonDecode(response.body.toString());
+
+      if (data['message']['status'] == 'success') {
+        var token = data['message']['token'];
+        var userEmail = data['message']['user']['email'];
+        var userName = data['message']['user']['full_name'];
+        var message = data['message']['message'];
+
+        print('Token: $token');
+        print('User Email: $userEmail');
+        print('User Name: $userName');
+        print('Message: $message');
+
         GoRouter.of(context).go('/home');
       } else {
-        print('failed lulul');
+        print('Login failed: ${data['message']['message']}');
       }
     } catch (e) {
-      print(e.toString());
+      print('Error: $e');
     }
   }
 
