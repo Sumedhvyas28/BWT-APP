@@ -1,57 +1,61 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:http/http.dart' as http;
 
-// pending
-// fully logic for schedule task had to be done
-
-class TasksPage extends StatelessWidget {
+class TasksPage extends StatefulWidget {
   TasksPage({super.key});
+
+  @override
+  _TasksPageState createState() => _TasksPageState();
+}
+
+class _TasksPageState extends State<TasksPage> {
+  Map<String, dynamic>? taskData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTaskData();
+  }
+
+  Future<void> fetchTaskData() async {
+    final response =
+        await http.get(Uri.parse('https://reqres.in/api/unknown/2'));
+    if (response.statusCode == 200) {
+      setState(() {
+        taskData = json.decode(response.body);
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      throw Exception('Failed to load tasks');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: _buildTasks(),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : taskData != null
+              ? _buildTasks(taskData!)
+              : Center(child: Text('Failed to load data')),
     );
   }
 
-  // Dummy data  FOR NOW MAKE MODELS FOR THESE
-  final List<Map<String, dynamic>> tasks = [
-    {
-      'status': 'completed',
-      'time': '1:00 PM',
-      'endTime': '2:00 PM',
-      'buttonColor': Colors.green,
-      'buttonText': 'Completed'
-    },
-    {
-      'status': 'pending',
-      'time': '3:00 PM',
-      'endTime': '4:00 PM',
-      'buttonColor': Colors.red,
-      'buttonText': 'Pending'
-    },
-    {
-      'status': 'in-progress',
-      'time': '6:00 PM',
-      'endTime': '7:00 PM',
-      'buttonColor': Colors.orange,
-      'buttonText': 'Delayed'
-    },
-  ];
-
-  Widget _buildTasks() {
-    return ListView.builder(
-      itemCount: tasks.length,
-      itemBuilder: (context, index) {
-        final task = tasks[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 12,
-          ),
-          child: Container(
+  Widget _buildTasks(Map<String, dynamic> taskData) {
+    final task = taskData['data'];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: ListView(
+        children: [
+          Container(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -59,7 +63,7 @@ class TasksPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      task['time'],
+                      task['year'].toString(),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -74,7 +78,7 @@ class TasksPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      task['endTime'],
+                      task['pantone_value'],
                       style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -106,19 +110,19 @@ class TasksPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Row(
                               children: [
                                 Icon(Icons.account_circle_rounded),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Schedule Task',
+                                      task['name'],
                                       style: TextStyle(fontSize: 15),
                                     ),
                                     Text(
-                                      'Monday, July 1',
+                                      'Year: ${task['year']}',
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ],
@@ -140,7 +144,10 @@ class TasksPage extends StatelessWidget {
                                     // Handle button click logic
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: task['buttonColor'],
+                                    backgroundColor: Color(int.parse(
+                                            task['color'].substring(1, 7),
+                                            radix: 16) +
+                                        0xFF000000),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 0),
                                     minimumSize: const Size(40, 30),
@@ -149,7 +156,7 @@ class TasksPage extends StatelessWidget {
                                     ),
                                   ),
                                   child: Text(
-                                    task['buttonText'],
+                                    'Color: ${task['color']}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.white,
@@ -163,29 +170,9 @@ class TasksPage extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.account_circle_rounded,
-                                        size: 16),
-                                    SizedBox(width: 5),
-                                    Text('Created by  : Sumedh',
-                                        style: TextStyle(fontSize: 11)),
-                                  ],
-                                ),
-                                SizedBox(height: 5),
-                                Row(
-                                  children: [
                                     Icon(Icons.info, size: 16),
                                     SizedBox(width: 5),
-                                    Text('Description:  Lab Sample Collection',
-                                        style: TextStyle(fontSize: 11)),
-                                  ],
-                                ),
-                                SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    Icon(Icons.location_on, size: 16),
-                                    SizedBox(width: 5),
-                                    Text(
-                                        'Location     :  48A Cua Bac,Tan Phu Dist',
+                                    Text('Pantone Value: 17-2031',
                                         style: TextStyle(fontSize: 11)),
                                   ],
                                 ),
@@ -200,8 +187,16 @@ class TasksPage extends StatelessWidget {
               ],
             ),
           ),
-        );
-      },
+          SizedBox(height: 20),
+          // Center(
+          //   child: Text(
+          //     taskData['support']['text'],
+          //     textAlign: TextAlign.center,
+          //     style: TextStyle(color: Colors.grey),
+          //   ),
+          // ),
+        ],
+      ),
     );
   }
 }

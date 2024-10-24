@@ -34,6 +34,17 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       var data = jsonDecode(response.body.toString());
+//       {
+//   "message": {
+//     "status": "success",
+//     "message": "Login successful",
+//     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InNlcnZpY2VjbzJAZ21haWwuY29tIn0.av1_O80QOQvFoKYolM3Hx3XHTXkviKHDW9jSYuQROKs",
+//     "user": {
+//       "email": "serviceco2@gmail.com",
+//       "full_name": "Service Co South"
+//     }
+//   }
+// }"
 
       if (data['message']['status'] == 'success') {
         var token = data['message']['token'];
@@ -148,9 +159,9 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButton() {
     return ElevatedButton(
         onPressed: () {
-          login(emailController.text.toString(),
-              passwordController.text.toString());
-          // GoRouter.of(context).go('/home');
+          // login(emailController.text.toString(),
+          //     passwordController.text.toString());
+          GoRouter.of(context).go('/home');
         },
         style: ElevatedButton.styleFrom(
           shape: const StadiumBorder(),

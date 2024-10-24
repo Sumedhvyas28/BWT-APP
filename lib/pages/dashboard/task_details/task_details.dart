@@ -36,13 +36,13 @@ class _TaskDetailsState extends State<TaskDetails> {
             ),
           ),
           content: Text(
-            "Please select at least one item before proceeding.",
+            "Please select all the item before proceeding.",
             style: TextStyle(fontSize: 20),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text(
                 "OK",
@@ -53,7 +53,6 @@ class _TaskDetailsState extends State<TaskDetails> {
         ),
       );
     } else {
-      // Proceed with normal navigation
       Navigator.push(
         context,
         PageTransition(

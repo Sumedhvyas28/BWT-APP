@@ -28,11 +28,14 @@ class _AlertPageState extends State<AlertPage> {
                   onPressed: () {
                     Navigator.of(context).pop();
 
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const ReasonPage();
-                        });
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => ReasonPage()));
+
+                    // showDialog(
+                    //     context: context,
+                    //     builder: (BuildContext context) {
+                    //       return const ReasonPage();
+                    //     });
                   },
                   child: Text(
                     'Yes',

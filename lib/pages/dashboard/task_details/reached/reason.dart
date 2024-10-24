@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/pages/dashboard/task_details/reached/submit.dart';
 
 class ReasonPage extends StatefulWidget {
   const ReasonPage({super.key});
@@ -10,126 +10,232 @@ class ReasonPage extends StatefulWidget {
 }
 
 class _ReasonPageState extends State<ReasonPage> {
+  // Dropdown value state
+  String? _selectedReason;
+
+  // TextEditingController for the detailed reason and working hours
+  final TextEditingController _detailedReasonController =
+      TextEditingController();
+  final TextEditingController _workingHoursController = TextEditingController();
+
+  // List of options for the dropdown
+  final List<String> _reasons = [
+    'Personal reasons',
+    'Client request',
+    'System issues',
+    'Weather conditions'
+  ];
+
+  // DateTime state for the rescheduled date
+  DateTime? _selectedDate;
+
+  // State for button pressed
+  bool _isButtonPressed = false;
+  String _buttonText = 'SUBMIT FOR APPROVAL'; // Default button text
+  Color _buttonColor = Pallete.activeButtonColor; // Default button color
+  String _isPunchOutMessage = ''; // Message to display when button is pressed
+
+  // Function to handle button press
+  void _onButtonPressed() {
+    setState(() {
+      _buttonColor = Pallete.disabledBtnColor; // Change button background color
+      _buttonText = 'RESCHEDULED'; // Change button text
+      _isButtonPressed = true; // Mark button as pressed
+      _isPunchOutMessage =
+          "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
+    });
+  }
+
+  @override
+  void dispose() {
+    _detailedReasonController.dispose(); // Dispose the controller
+    _workingHoursController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return Scaffold(
       backgroundColor: Colors.white,
-      actions: [
-        Expanded(
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+      appBar: CustomDashApp(title: 'Task Reschedule'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              const Text(
+                'Reason Type',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(height: 10),
+
+              // DropdownButtonFormField for selecting the reason
+              DropdownButtonFormField<String>(
+                value: _selectedReason,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
                 ),
-                backgroundColor: Pallete.activeButtonColor,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                'Submit For Approval',
-                style: TextStyle(color: Colors.white, fontSize: 23),
-                maxLines: 2,
-              ),
-            ),
-          ),
-        )
-      ],
-      title: Column(
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 2),
-              child: Text(
-                'REASON OF RESCHEDULING',
-                maxLines: 2,
-                style: TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Divider(
-            thickness: 2,
-            color: Colors.black,
-          ),
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(
-                  color: Colors.black,
-                  width: 4.0,
-                ),
-              ),
-              labelText: 'Select Your reason',
-              labelStyle: TextStyle(fontSize: 16),
-            ),
-          ),
-          SizedBox(height: 10),
-          InkWell(
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return SubmitPage();
+                hint: const Text('Select Your Reason'),
+                items: _reasons.map((String reason) {
+                  return DropdownMenuItem<String>(
+                    value: reason,
+                    child: Text(reason),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedReason = newValue;
                   });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Icon(
-                  Icons.add_circle_rounded,
-                  color: Pallete.termsFontColor,
-                ),
-                SizedBox(
-                  width: 4,
-                ),
-                Text(
-                  'Add your reason',
-                  style: TextStyle(color: Pallete.termsFontColor),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(
-                  color: Colors.black,
-                  width: 4.0,
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Add Your Reason (Detailed Reason)
+              const Text(
+                'Add Your Detailed Reason',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(height: 10),
+
+              // TextField for detailed reason
+              TextField(
+                controller: _detailedReasonController,
+                maxLines: 6,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  hintText: 'Type your reason here...',
                 ),
               ),
-              labelText: 'Date Of Reschedule',
-              labelStyle: TextStyle(fontSize: 16),
-            ),
-          ),
-          SizedBox(height: 10),
-          TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(
-                  color: Colors.black,
-                  width: 4.0,
+              const SizedBox(height: 20),
+
+              // Date field
+              const Text(
+                'Reschedule Date',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(height: 10),
+
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    _selectedDate == null
+                        ? 'Select Date'
+                        : 'Selected date: ${_selectedDate!.toLocal().toString().split(' ')[0]}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
-              labelText: 'Working Hours',
-              labelStyle: TextStyle(fontSize: 16),
-            ),
+
+              const SizedBox(height: 20),
+
+              // Working hours field
+              const Text(
+                'Working Hours',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.start,
+              ),
+              const SizedBox(height: 10),
+
+              // TextField for working hours
+              TextField(
+                controller: _workingHoursController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 2.0,
+                    ),
+                  ),
+                  hintText: 'Enter working hours',
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              Container(
+                padding: EdgeInsets.all(2),
+                // width: double.infinity,
+                child: Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _buttonColor, // Use dynamic button color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed:
+                        _onButtonPressed, // Call the button press function
+                    child: Text(
+                      _buttonText, // Use dynamic button text
+                      style: TextStyle(fontSize: 25, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Display the message below the button if pressed
+              if (_isButtonPressed)
+                Center(
+                  child: Text(
+                    _isPunchOutMessage,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Pallete.redBtnColor,
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  // Function to pick date
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
   }
 }
