@@ -5,7 +5,7 @@ import 'package:flutter_application_1/pages/dashboard/task_details/blank_Deliver
 import 'package:page_transition/page_transition.dart';
 
 class TaskDetails extends StatefulWidget {
-  const TaskDetails({super.key});
+  const TaskDetails({super.key, required task});
 
   @override
   State<TaskDetails> createState() => _TaskDetailsState();

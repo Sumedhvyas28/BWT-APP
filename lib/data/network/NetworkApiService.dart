@@ -24,7 +24,7 @@ class NetworkApiService extends BaseaApiServices {
   }
 
   @override
-  Future getPostApiResponse(String url) async {
+  Future getPostApiResponse(String url, dynamic data) async {
     dynamic responseJson;
     try {
       final response = await http

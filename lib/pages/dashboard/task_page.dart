@@ -1,11 +1,22 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/models/product_description.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html_parser;
+
+String _removeHtmlTags(String? htmlText) {
+  if (htmlText == null) return '';
+  final document =
+      html_parser.parse(htmlText); // Corrected to use html_parser.parse
+  return document.body?.text ?? '';
+}
 
 class TasksPage extends StatefulWidget {
-  TasksPage({super.key});
+  const TasksPage({super.key});
 
   @override
   _TasksPageState createState() => _TasksPageState();
@@ -22,18 +33,37 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   Future<void> fetchTaskData() async {
-    final response =
-        await http.get(Uri.parse('https://reqres.in/api/unknown/2'));
-    if (response.statusCode == 200) {
+    final url = Uri.parse(
+        'https://00b6-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'token 45a6b57c35c5a19:8fd12351c087d9e',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          taskData = json.decode(response.body);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        throw Exception('Failed to load tasks');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
       setState(() {
-        taskData = json.decode(response.body);
         isLoading = false;
       });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      throw Exception('Failed to load tasks');
     }
   }
 
@@ -50,12 +80,27 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   Widget _buildTasks(Map<String, dynamic> taskData) {
-    final task = taskData['data'];
-    return Padding(
+    final tasks = taskData['message']; // This is an array of task objects
+
+    return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: ListView(
-        children: [
-          Container(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+        final mntcTime = task['mntc_time']?.substring(0, 8) ??
+            'No Time'; // Extracting "HH:MM:SS" format
+        Html(
+          data: 'Description: ${task['description']}',
+          style: {
+            "html": Style(
+              fontSize: FontSize(11), // Adjust font size as needed
+            ),
+          },
+        );
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Container(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -63,7 +108,7 @@ class _TasksPageState extends State<TasksPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      task['year'].toString(),
+                      mntcTime,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -78,7 +123,7 @@ class _TasksPageState extends State<TasksPage> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      task['pantone_value'],
+                      mntcTime,
                       style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -87,15 +132,34 @@ class _TasksPageState extends State<TasksPage> {
                     ),
                   ],
                 ),
+                // Divider
+                const SizedBox(width: 10),
+                // Column(
+                //   children: [
+                //     Container(
+                //       width: 2,
+                //       height: 50, // Set height according to your layout
+                //       color: (task['completion_status'] == 'completed')
+                //           ? Colors.green // Color for completed
+                //           : (task['completion_status'] == 'incomplete')
+                //               ? Colors.red // Color for incomplete
+                //               : Pallete
+                //                   .lineButton4Color, // Default color for pending
+                //     ),
+                //   ],
+                // ),
+                const SizedBox(width: 10),
+
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
-                        PageTransition(
-                          child: TaskDetails(),
-                          type: PageTransitionType.fade,
+                        MaterialPageRoute(
+                          builder: (context) => TaskDetails(
+                            task: null,
+                          ),
                         ),
                       );
                     },
@@ -114,21 +178,25 @@ class _TasksPageState extends State<TasksPage> {
                               children: [
                                 Icon(Icons.account_circle_rounded),
                                 const SizedBox(width: 8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      task['name'],
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    Text(
-                                      'Year: ${task['year']}',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        task['subject'],
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      Text(
+                                        task['mntc_date'],
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 10),
                             Row(
                               children: [
                                 const Text(
@@ -144,10 +212,15 @@ class _TasksPageState extends State<TasksPage> {
                                     // Handle button click logic
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(int.parse(
-                                            task['color'].substring(1, 7),
-                                            radix: 16) +
-                                        0xFF000000),
+                                    backgroundColor: (task[
+                                                'completion_status'] ==
+                                            'completed')
+                                        ? Colors.green // Color for completed
+                                        : (task['completion_status'] ==
+                                                'incomplete')
+                                            ? Colors.red // Color for incomplete
+                                            : Pallete
+                                                .lineButton4Color, // Default color for pending
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 0),
                                     minimumSize: const Size(40, 30),
@@ -156,7 +229,8 @@ class _TasksPageState extends State<TasksPage> {
                                     ),
                                   ),
                                   child: Text(
-                                    'Color: ${task['color']}',
+                                    task[
+                                        'completion_status'], // Displaying the status text
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.white,
@@ -165,17 +239,69 @@ class _TasksPageState extends State<TasksPage> {
                                 ),
                               ],
                             ),
-                            const Column(
+                            const SizedBox(height: 10),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.info, size: 16),
-                                    SizedBox(width: 5),
-                                    Text('Pantone Value: 17-2031',
-                                        style: TextStyle(fontSize: 11)),
-                                  ],
+                                Icon(Icons.person, size: 20),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Created by  : ${task['owner']}',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.info, size: 20),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Description : ',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: Html(
+                                    data: '${task['description']}',
+                                  ),
+                                )),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.location_pin, size: 20),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Location  :',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: Html(
+                                    data: ' ${task['address_display']}',
+                                  ),
+                                )),
                               ],
                             ),
                           ],
@@ -187,16 +313,8 @@ class _TasksPageState extends State<TasksPage> {
               ],
             ),
           ),
-          SizedBox(height: 20),
-          // Center(
-          //   child: Text(
-          //     taskData['support']['text'],
-          //     textAlign: TextAlign.center,
-          //     style: TextStyle(color: Colors.grey),
-          //   ),
-          // ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
