@@ -1,19 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/models/product_description.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html_parser;
-
-String _removeHtmlTags(String? htmlText) {
-  if (htmlText == null) return '';
-  final document =
-      html_parser.parse(htmlText); // Corrected to use html_parser.parse
-  return document.body?.text ?? '';
-}
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
