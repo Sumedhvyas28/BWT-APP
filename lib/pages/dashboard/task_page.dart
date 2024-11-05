@@ -24,7 +24,7 @@ class _TasksPageState extends State<TasksPage> {
 
   Future<void> fetchTaskData() async {
     final url = Uri.parse(
-        'https://00b6-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
+        'https://686f-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
 
     try {
       final response = await http.get(
@@ -148,7 +148,7 @@ class _TasksPageState extends State<TasksPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => TaskDetails(
-                            task: null,
+                            task: taskData,
                           ),
                         ),
                       );

@@ -37,6 +37,32 @@ class _ReasonPageState extends State<ReasonPage> {
 
   // Function to handle button press
   void _onButtonPressed() {
+    // Validate all fields before proceeding
+    if (_selectedReason == null ||
+        _detailedReasonController.text.isEmpty ||
+        _selectedDate == null ||
+        _workingHoursController.text.isEmpty) {
+      // Show an alert if validation fails
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Validation Error'),
+            content: Text('Please fill all fields before submitting.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     setState(() {
       _buttonColor = Pallete.disabledBtnColor; // Change button background color
       _buttonText = 'RESCHEDULED'; // Change button text
@@ -126,7 +152,7 @@ class _ReasonPageState extends State<ReasonPage> {
               ),
               const SizedBox(height: 20),
 
-              // Date field
+              // Reschedule Date
               const Text(
                 'Reschedule Date',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -186,11 +212,10 @@ class _ReasonPageState extends State<ReasonPage> {
 
               Container(
                 padding: EdgeInsets.all(2),
-                // width: double.infinity,
                 child: Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _buttonColor, // Use dynamic button color
+                      backgroundColor: _buttonColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -198,7 +223,7 @@ class _ReasonPageState extends State<ReasonPage> {
                     onPressed:
                         _onButtonPressed, // Call the button press function
                     child: Text(
-                      _buttonText, // Use dynamic button text
+                      _buttonText,
                       style: TextStyle(fontSize: 25, color: Colors.white),
                     ),
                   ),
@@ -226,10 +251,11 @@ class _ReasonPageState extends State<ReasonPage> {
 
   // Function to pick date
   Future<void> _selectDate(BuildContext context) async {
+    final DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: now,
+      firstDate: now, // Prevent selecting dates before today
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != _selectedDate) {
