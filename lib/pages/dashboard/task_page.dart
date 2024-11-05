@@ -4,6 +4,7 @@ import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:http/http.dart' as http;
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
@@ -62,7 +63,12 @@ class _TasksPageState extends State<TasksPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: LoadingAnimationWidget.waveDots(
+                color: Pallete.mainFontColor,
+                size: 70,
+              ),
+            )
           : taskData != null
               ? _buildTasks(taskData!)
               : Center(child: Text('Failed to load data')),
@@ -77,6 +83,7 @@ class _TasksPageState extends State<TasksPage> {
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
+
         final mntcTime = task['mntc_time']?.substring(0, 8) ??
             'No Time'; // Extracting "HH:MM:SS" format
         Html(
@@ -148,7 +155,7 @@ class _TasksPageState extends State<TasksPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => TaskDetails(
-                            task: taskData,
+                            task: task,
                           ),
                         ),
                       );

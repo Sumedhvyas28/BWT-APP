@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/models/product_description.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/blank_Delivery.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
+import 'package:http/http.dart' as http;
 
 class TaskDetails extends StatefulWidget {
-  final Map<String, dynamic>? task; // Accept task data as a parameter
+  final Map<String, dynamic>? task;
 
-  const TaskDetails({Key? key, required this.task}) : super(key: key);
+  const TaskDetails({super.key, required this.task});
 
   @override
   State<TaskDetails> createState() => _TaskDetailsState();
@@ -25,11 +26,9 @@ class _TaskDetailsState extends State<TaskDetails> {
     super.initState();
 
     if (widget.task != null) {
-      // Use passed data if available
       taskData = widget.task;
       isLoading = false;
     } else {
-      // Otherwise, fetch data from API
       fetchTaskData();
     }
   }
@@ -48,9 +47,6 @@ class _TaskDetailsState extends State<TaskDetails> {
         },
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         setState(() {
           taskData = json.decode(response.body);
@@ -60,7 +56,7 @@ class _TaskDetailsState extends State<TaskDetails> {
         setState(() {
           isLoading = false;
         });
-        throw Exception('Failed to load tasks');
+        throw Exception('Failed to load task data');
       }
     } catch (e) {
       print('Error occurred: $e');
@@ -70,60 +66,63 @@ class _TaskDetailsState extends State<TaskDetails> {
     }
   }
 
-  final List<String> items = [
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-  ];
-
-  // Track selection status
-  List<bool> isSelected = List.filled(3, false); // Adjust the size as needed
-
-  void _checkAndNavigate() {
-    if (isSelected.contains(false)) {
-      // Show alert dialog if no checkbox is selected
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Center(
-            child: Text(
-              "No Selection",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-          ),
-          content: Text(
-            "Please select all the items before proceeding.",
-            style: TextStyle(fontSize: 20),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "OK",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        PageTransition(
-          child: BlankDeliveryPage(),
-          type: PageTransitionType.fade,
-        ),
-      );
-    }
-  }
+  List<bool> isSelected = [];
 
   @override
   Widget build(BuildContext context) {
-    final task = taskData?['message']?[2];
-    final mntcTime = task['mntc_time']?.substring(0, 8) ??
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    final task = taskData;
+    final mntcTime = task?['mntc_time']?.substring(0, 8) ??
         'No Time'; // Extracting "HH:MM:SS" format
+    print(task?['spare_items']);
+
+    // Initialize spareItems and isSelected here
+    List<dynamic> spareItems = task?['spare_items'] ?? [];
+    if (isSelected.length != spareItems.length) {
+      isSelected = List<bool>.filled(spareItems.length, false);
+    }
+
+    void checkAndNavigate() {
+      if (isSelected.contains(false)) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Center(
+              child: Text(
+                "No Selection",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+            ),
+            content: Text(
+              "Please select all the items before proceeding.",
+              style: TextStyle(fontSize: 20),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "OK",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          PageTransition(
+            child: BlankDeliveryPage(),
+            type: PageTransitionType.fade,
+          ),
+        );
+      }
+    }
 
     // double screenWidth = MediaQuery.of(context).size
     return Scaffold(
@@ -162,7 +161,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      task[
+                                      task?[
                                           'name'], // Use null-aware operator for safety
                                       style: TextStyle(
                                         fontSize: 18,
@@ -180,7 +179,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                     Expanded(
                                       child: SingleChildScrollView(
                                         child: Html(
-                                          data: task['address_display'] ?? '',
+                                          data: task?['address_display'] ?? '',
                                           style: {
                                             "body": Style(
                                               fontSize: FontSize(18),
@@ -233,7 +232,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      task['contact_display'],
+                                      task?['contact_display'],
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
@@ -244,7 +243,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                         Icon(Icons.phone),
                                         SizedBox(width: 5),
                                         Text(
-                                          task['contact_mobile'],
+                                          task?['contact_mobile'],
                                           style: TextStyle(fontSize: 12),
                                         ),
                                       ],
@@ -255,7 +254,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                         Icon(Icons.email),
                                         SizedBox(width: 5),
                                         Text(
-                                          task['contact_email'],
+                                          task?['contact_email'],
                                           style: TextStyle(fontSize: 12),
                                         ),
                                       ],
@@ -400,7 +399,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                task['maintenance_description'],
+                                task?['maintenance_description'],
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -410,7 +409,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Html(
-                                    data: task['description'],
+                                    data: task?['description'],
                                     style: {
                                       "p": Style(),
                                       // Add more styles as needed for other HTML elements
@@ -447,24 +446,60 @@ class _TaskDetailsState extends State<TaskDetails> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Expanded(
+                              // Set a fixed height for the ListView
+                              SizedBox(
+                                height:
+                                    200, // Adjust height based on your UI needs
                                 child: ListView.builder(
-                                  itemCount: items.length,
+                                  itemCount: spareItems.length,
                                   itemBuilder: (context, index) {
+                                    final item = spareItems[index];
+
                                     return Row(
+                                      // crossAxisAlignment: cros,
                                       children: [
-                                        Checkbox(
-                                          value: isSelected[index],
-                                          onChanged: (newBool) {
-                                            setState(() {
-                                              isSelected[index] = newBool!;
-                                            });
-                                          },
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Checkbox(
+                                              value: isSelected[index],
+                                              onChanged: (newBool) {
+                                                setState(() {
+                                                  isSelected[index] =
+                                                      newBool ?? false;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item?['item_code'] ??
+                                                  'No Item Code',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            // Text(" :"),
+                                          ],
                                         ),
                                         Expanded(
-                                          child: Text(
-                                            items[index],
-                                            style: TextStyle(fontSize: 14),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                item?['description'] ??
+                                                    'No Description',
+                                                style: TextStyle(fontSize: 12),
+                                                maxLines: null,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -477,6 +512,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                         ),
                       ),
                     ),
+
                     Container(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -485,7 +521,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             )),
-                        onPressed: _checkAndNavigate,
+                        onPressed: checkAndNavigate,
                         child: const Text(
                           'Going For Visit',
                           style: TextStyle(
