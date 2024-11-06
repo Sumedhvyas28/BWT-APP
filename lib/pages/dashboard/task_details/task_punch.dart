@@ -3,18 +3,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/newO.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/reached_location.dart';
 import 'package:page_transition/page_transition.dart';
 
 // 300 m not visible
 class TaskPunch extends StatefulWidget {
-  const TaskPunch({super.key});
+  final Map<String, dynamic>? task;
+
+  const TaskPunch({super.key, this.task});
 
   @override
   State<TaskPunch> createState() => TaskPunchState();
 }
 
 class TaskPunchState extends State<TaskPunch> {
+  Map<String, dynamic>? taskData;
+  bool isLoading = true;
+
   Color _buttonColor = const Color.fromARGB(173, 149, 149, 143); // before delay
   double _fillWidth = 0;
   final double _containerWidth = 350;
@@ -25,10 +31,14 @@ class TaskPunchState extends State<TaskPunch> {
   void initState() {
     Timer(const Duration(seconds: 1, milliseconds: 500), () {
       setState(() {
+        taskData = widget.task;
+        isLoading = false;
+
         _buttonColor = Pallete.activeButtonColor;
         _fillWidth = _containerWidth * 0.7;
         _showLocations = true;
         _showDistance = true;
+        print(taskData?['name']);
       });
     });
     super.initState();
@@ -36,17 +46,20 @@ class TaskPunchState extends State<TaskPunch> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.task == null) {
+      throw Exception('failed to load data');
+    }
     return Scaffold(
       appBar: CustomDashApp(title: 'Task Details'),
       backgroundColor: Colors.white,
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'House no 123 Plus Cross Street',
+              Text(
+                taskData?['delivery_address'] ?? 'no address',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
@@ -138,7 +151,9 @@ class TaskPunchState extends State<TaskPunch> {
                       Navigator.push(
                           context,
                           PageTransition(
-                            child: ReachedLocation(),
+                            child: Newo(
+                              task: taskData,
+                            ),
                             type: PageTransitionType.fade,
                           ));
                     },

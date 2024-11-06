@@ -13,7 +13,9 @@ import 'package:page_transition/page_transition.dart';
 // punch in button functionality to be changed
 
 class ReachedLocation extends StatefulWidget {
-  const ReachedLocation({super.key});
+  final Map<String, dynamic>? task;
+
+  const ReachedLocation({super.key, this.task});
 
   @override
   State<ReachedLocation> createState() => _ReachedLocationState();

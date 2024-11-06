@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/models/product_description.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/blank_Delivery.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/task_punch.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
@@ -29,42 +29,43 @@ class _TaskDetailsState extends State<TaskDetails> {
       taskData = widget.task;
       isLoading = false;
     } else {
-      fetchTaskData();
+      // fetchTaskData();
+      throw Exception('Failed to load task data');
     }
   }
 
-  Future<void> fetchTaskData() async {
-    final url = Uri.parse(
-      'https://686f-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance',
-    );
+  // Future<void> fetchTaskData() async {
+  //   final url = Uri.parse(
+  //     'https://403a-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance',
+  //   );
 
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'token 45a6b57c35c5a19:8fd12351c087d9e',
-          'Content-Type': 'application/json',
-        },
-      );
+  //   try {
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         'Authorization': 'token 45a6b57c35c5a19:8fd12351c087d9e',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     );
 
-      if (response.statusCode == 200) {
-        setState(() {
-          taskData = json.decode(response.body);
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
-        });
-        throw Exception('Failed to load task data');
-      }
-    } catch (e) {
-      print('Error occurred: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       setState(() {
+  //         taskData = json.decode(response.body);
+  //         isLoading = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         isLoading = false;
+  //       });
+  //       throw Exception('Failed to load task data');
+  //     }
+  //   } catch (e) {
+  //     print('Error occurred: $e');
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   List<bool> isSelected = [];
 
@@ -117,7 +118,9 @@ class _TaskDetailsState extends State<TaskDetails> {
         Navigator.push(
           context,
           PageTransition(
-            child: BlankDeliveryPage(),
+            child: TaskPunch(
+              task: task,
+            ),
             type: PageTransitionType.fade,
           ),
         );
