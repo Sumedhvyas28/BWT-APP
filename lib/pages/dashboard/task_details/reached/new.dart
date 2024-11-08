@@ -290,3 +290,168 @@ class _ReachedLocationTState extends State<ReachedLocationT> {
     );
   }
 }
+
+
+
+// / new 
+
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_application_1/constants/custom_dashapp.dart';
+
+// class Newo extends StatefulWidget {
+//   const Newo({super.key, this.task});
+//   final Map<String, dynamic>? task;
+
+//   @override
+//   State<Newo> createState() => _NewoState();
+// }
+
+// class _NewoState extends State<Newo> {
+//   Map<String, dynamic>? taskData;
+//   bool isLoading = true;
+
+//   List<bool> isSelected = [];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     taskData = widget.task;
+//     isLoading = false;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (isLoading) {
+//       return Center(child: CircularProgressIndicator());
+//     }
+
+//     final task = taskData;
+//     final checktreeDescription = task?['checktree_description'] ?? {};
+
+//     // Flatten the nested structure
+//     List<Map<String, dynamic>> items = [];
+//     checktreeDescription.forEach((key, value) {
+//       if (value is List) {
+//         items.addAll(List<Map<String, dynamic>>.from(value));
+//       }
+//     });
+
+//     // Ensure isSelected matches the number of items
+//     if (isSelected.length != items.length) {
+//       isSelected = List<bool>.filled(items.length, false);
+//     }
+
+//     String? lastDisplayedProductCode;
+
+//     return Scaffold(
+//       appBar: CustomDashApp(title: 'Product List'),
+//       backgroundColor: Colors.white,
+//       body: Padding(
+//         padding: EdgeInsets.all(8),
+//         child: Column(
+//           children: [
+//             Text(
+//               'Product List',
+//               style: TextStyle(fontSize: 16),
+//             ),
+//             SizedBox(height: 10),
+//             Divider(color: Colors.green, thickness: 4),
+//             SizedBox(height: 10),
+//             Expanded(
+//               child: ListView.builder(
+//                 itemCount: items.length,
+//                 itemBuilder: (context, index) {
+//                   final item = items[index];
+//                   final itemCode = item['item_code'] ?? 'No Item Code';
+//                   final itemName = item['item_name'] ?? 'No Item Name';
+//                   final heading = item['heading'] ?? 'no heading';
+
+//                   bool showProductCode = itemCode != lastDisplayedProductCode;
+//                   if (showProductCode) {
+//                     lastDisplayedProductCode = itemCode;
+//                   }
+
+//                   return Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       if (showProductCode) ...[
+//                         Padding(
+//                           padding: const EdgeInsets.all(8.0),
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Row(
+//                                 children: [
+//                                   Text(
+//                                     itemCode,
+//                                     style: TextStyle(
+//                                       fontSize: 18,
+//                                       fontWeight: FontWeight.bold,
+//                                     ),
+//                                   ),
+//                                   Spacer(),
+//                                   Icon(Icons.ac_unit),
+//                                   Icon(Icons.ac_unit),
+//                                 ],
+//                               ),
+//                               SizedBox(
+//                                 height: 6,
+//                               ),
+//                               Text(
+//                                 itemName,
+//                                 style: TextStyle(
+//                                   fontSize: 14,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                         SizedBox(height: 8),
+//                       ],
+//                       Row(
+//                         children: [
+//                           Checkbox(
+//                             value: isSelected[index],
+//                             onChanged: (bool? newBool) {
+//                               setState(() {
+//                                 isSelected[index] = newBool ?? false;
+
+//                                 // Move item based on checkbox state
+//                                 if (newBool!) {
+//                                   final itemToMove = items.removeAt(index);
+//                                   items.add(itemToMove);
+//                                 } else {
+//                                   final itemToMove =
+//                                       items.removeAt(items.length - 1);
+//                                   items.insert(index, itemToMove);
+//                                 }
+//                               });
+//                             },
+//                           ),
+//                           Expanded(
+//                             child: Text(
+//                               heading,
+//                               style: TextStyle(
+//                                 fontSize: 14,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   );
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

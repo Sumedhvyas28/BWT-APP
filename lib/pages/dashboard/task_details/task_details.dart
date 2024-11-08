@@ -343,8 +343,10 @@ class _TaskDetailsState extends State<TaskDetails> {
 
                     // New Container with Padding
                     Container(
-                      padding: const EdgeInsets.all(8.0),
-                      height: 120,
+                      width: double.infinity,
+
+                      height: MediaQuery.of(context).size.height *
+                          0.15, // Responsive height,
                       child: Card(
                         elevation: 3,
                         color: Colors.white,
@@ -379,6 +381,7 @@ class _TaskDetailsState extends State<TaskDetails> {
 
                     // Container sop
                     SizedBox(
+                      width: double.infinity,
                       height: MediaQuery.of(context).size.height *
                           0.28, // Responsive height,
                       child: Card(
@@ -402,24 +405,25 @@ class _TaskDetailsState extends State<TaskDetails> {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                task?['maintenance_description'],
+                                task?['maintenance_description'] ??
+                                    'no description available',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 8),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Html(
-                                    data: task?['description'],
-                                    style: {
-                                      "p": Style(),
-                                      // Add more styles as needed for other HTML elements
-                                    },
-                                  ),
-                                ),
-                              ),
+                              // Expanded(
+                              //   child: SingleChildScrollView(
+                              //     child: Html(
+                              //       data: task?['customer_address'],
+                              //       style: {
+                              //         "p": Style(),
+                              //         // Add more styles as needed for other HTML elements
+                              //       },
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -436,11 +440,12 @@ class _TaskDetailsState extends State<TaskDetails> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 18, right: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 18.0, vertical: 10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 10),
                               const Text(
                                 'Spare Items',
                                 style: TextStyle(
@@ -449,63 +454,58 @@ class _TaskDetailsState extends State<TaskDetails> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              // Set a fixed height for the ListView
                               SizedBox(
-                                height:
-                                    200, // Adjust height based on your UI needs
+                                height: 200, // Fixed height for ListView
                                 child: ListView.builder(
                                   itemCount: spareItems.length,
                                   itemBuilder: (context, index) {
                                     final item = spareItems[index];
 
-                                    return Row(
-                                      // crossAxisAlignment: cros,
-                                      children: [
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Checkbox(
-                                              value: isSelected[index],
-                                              onChanged: (newBool) {
-                                                setState(() {
-                                                  isSelected[index] =
-                                                      newBool ?? false;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item?['item_code'] ??
-                                                  'No Item Code',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            // Text(" :"),
-                                          ],
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                item?['description'] ??
-                                                    'No Description',
-                                                style: TextStyle(fontSize: 12),
-                                                maxLines: null,
-                                              ),
-                                            ],
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Checkbox(
+                                            value: isSelected[index],
+                                            onChanged: (newBool) {
+                                              setState(() {
+                                                isSelected[index] =
+                                                    newBool ?? false;
+                                              });
+                                            },
                                           ),
-                                        ),
-                                      ],
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item?['item_code'] ??
+                                                      'No Item Code',
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  item?['description'] ??
+                                                      'No Description',
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                  maxLines:
+                                                      3, // Limit text display for clarity
+                                                  overflow: TextOverflow
+                                                      .ellipsis, // Trim long text
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                 ),
