@@ -57,6 +57,8 @@ class _NewoState extends State<Newo> {
     taskData = widget.task;
     final checktreeDescription = taskData?['checktree_description'] ?? {};
     final symptomsTable = taskData?['symptoms_table'] ?? {};
+    print('///////////fq/q//');
+    print(checktreeDescription);
 
     symptomsTable.forEach((key, value) {
       if (value is List) {
@@ -276,21 +278,10 @@ class _NewoState extends State<Newo> {
                                             size: 20,
                                           ),
                                         ),
-                                        IconButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                child: AddSymptoms(),
-                                                type: PageTransitionType.fade,
-                                              ),
-                                            );
-                                          },
-                                          icon: Icon(
-                                            Icons.location_pin,
-                                            color: Pallete.mainFontColor,
-                                            size: 20,
-                                          ),
+
+                                        Text(
+                                          item['item_location'] ??
+                                              'No Item Code',
                                         )
                                       ],
                                     ),
