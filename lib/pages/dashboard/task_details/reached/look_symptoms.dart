@@ -131,7 +131,7 @@ class _LookForSymptomsState extends State<LookForSymptoms> {
                       height: 10,
                     ),
                     const Text(
-                      'Solutions',
+                      'Resolutions',
                       style: TextStyle(
                         color: Pallete.mainFontColor,
                         fontSize: 18,

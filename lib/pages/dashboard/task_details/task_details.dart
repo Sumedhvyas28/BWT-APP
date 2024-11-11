@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/blank_Delivery.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_punch.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:page_transition/page_transition.dart';
@@ -198,13 +199,24 @@ class _TaskDetailsState extends State<TaskDetails> {
                               Padding(
                                 padding: EdgeInsets.all(
                                     MediaQuery.of(context).size.width * 0.02),
-                                child: Image.asset(
-                                  'assets/images/cal.png',
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.15,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.25,
-                                  fit: BoxFit.cover,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        child: mapPage(),
+                                        type: PageTransitionType.fade,
+                                      ),
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/images/cal.png',
+                                    height: MediaQuery.of(context).size.height *
+                                        0.15,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ],

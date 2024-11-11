@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
+import 'package:go_router/go_router.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ReasonPage extends StatefulWidget {
   const ReasonPage({super.key});
@@ -23,7 +26,8 @@ class _ReasonPageState extends State<ReasonPage> {
     'Personal reasons',
     'Client request',
     'System issues',
-    'Weather conditions'
+    'Weather conditions',
+    'others'
   ];
 
   // DateTime state for the rescheduled date
@@ -36,6 +40,7 @@ class _ReasonPageState extends State<ReasonPage> {
   String _isPunchOutMessage = ''; // Message to display when button is pressed
 
   // Function to handle button press
+// Function to handle button press
   void _onButtonPressed() {
     // Validate all fields before proceeding
     if (_selectedReason == null ||
@@ -69,7 +74,26 @@ class _ReasonPageState extends State<ReasonPage> {
       _isButtonPressed = true; // Mark button as pressed
       _isPunchOutMessage =
           "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
+
+      Future.delayed(Duration(seconds: 5), () {
+        Navigator.push(
+          context,
+          PageTransition(
+            child: DashboardPage(),
+            type: PageTransitionType.fade,
+          ),
+        );
+      });
     });
+
+    // Delay navigation by 3 seconds if it's a reschedule
+    if (_selectedReason == 'Client request') {
+      // Assuming reschedule corresponds to this reason
+      Future.delayed(Duration(seconds: 3), () {
+        // Navigate to the home (dashboard) page after 3 seconds
+        GoRouter.of(context).go('/home');
+      });
+    }
   }
 
   @override
@@ -154,7 +178,7 @@ class _ReasonPageState extends State<ReasonPage> {
 
               // Reschedule Date
               const Text(
-                'Reschedule Date',
+                'Proposed Reschedule Date',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.start,
               ),
@@ -186,7 +210,7 @@ class _ReasonPageState extends State<ReasonPage> {
 
               // Working hours field
               const Text(
-                'Working Hours',
+                'Additional Hours Needed',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.start,
               ),
@@ -222,6 +246,7 @@ class _ReasonPageState extends State<ReasonPage> {
                     ),
                     onPressed:
                         _onButtonPressed, // Call the button press function
+
                     child: Text(
                       _buttonText,
                       style: TextStyle(fontSize: 25, color: Colors.white),

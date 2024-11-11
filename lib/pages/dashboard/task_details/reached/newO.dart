@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/models/product_description.dart';
+import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/add_symptoms.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/error_page.dart';
@@ -35,7 +36,17 @@ class _NewoState extends State<Newo> {
     if (allSelected && _isPunchPressed) {
       setState(() {
         _isPunchOutPressed = true;
-        _isPunchOutMessage = 'Job Punch OUT Successful! AT 16:00 PM';
+        _isPunchOutMessage =
+            "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
+        Future.delayed(Duration(seconds: 5), () {
+          Navigator.push(
+            context,
+            PageTransition(
+              child: DashboardPage(),
+              type: PageTransitionType.fade,
+            ),
+          );
+        });
       });
     } else {
       showDialog(
@@ -172,8 +183,8 @@ class _NewoState extends State<Newo> {
               ),
               if (_isPunchPressed)
                 Center(
-                  child: const Text(
-                    'Job Punch in Successful! AT 16:00 PM',
+                  child: Text(
+                    "Punched in at ${TimeOfDay.now().format(context)}", // Update message
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -181,6 +192,7 @@ class _NewoState extends State<Newo> {
                     ),
                   ),
                 ),
+
               SizedBox(
                 height: 10,
               ),
@@ -278,10 +290,36 @@ class _NewoState extends State<Newo> {
                                             size: 20,
                                           ),
                                         ),
-
-                                        Text(
-                                          item['item_location'] ??
-                                              'No Item Code',
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.location_on,
+                                            color: Pallete.mainFontColor,
+                                          ),
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text('Item Location'),
+                                                  content: Text(
+                                                    item['item_location'] ??
+                                                        'No Item location provided',
+                                                    style:
+                                                        TextStyle(fontSize: 16),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
+                                                      },
+                                                      child: Text('Close'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
                                         )
                                       ],
                                     ),

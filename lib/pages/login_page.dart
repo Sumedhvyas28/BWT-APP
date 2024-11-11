@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
+import 'package:page_transition/page_transition.dart';
 
 // check box
 // height check
@@ -162,6 +164,13 @@ class _LoginPageState extends State<LoginPage> {
           // login(emailController.text.toString(),
           //     passwordController.text.toString());
           GoRouter.of(context).go('/home');
+          // Navigator.push(
+          //   context,
+          //   PageTransition(
+          //     child: mapPage(),
+          //     type: PageTransitionType.fade,
+          //   ),
+          // );
         },
         style: ElevatedButton.styleFrom(
           shape: const StadiumBorder(),

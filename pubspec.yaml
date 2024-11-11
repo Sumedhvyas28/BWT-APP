@@ -56,6 +56,13 @@ dependencies:
   provider: ^6.1.2
   html: ^0.15.4
   flutter_html: ^3.0.0-beta.2
+  flutter_map: ^7.0.2
+  geocode: ^1.0.3
+  tuple: ^2.0.2
+  latlong2: ^0.9.1
+  positioned_tap_detector_2: ^1.0.4
+  transparent_image: ^2.0.1
+  proj4dart: ^2.1.0
 
 dev_dependencies:
   flutter_test:
