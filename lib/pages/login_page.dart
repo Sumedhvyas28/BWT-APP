@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
+import 'package:flutter_application_1/view_model/auth_view_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 // check box
 // height check
@@ -22,51 +24,6 @@ class _LoginPageState extends State<LoginPage> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  void login(String email, String password) async {
-    try {
-      Response response = await post(
-        Uri.parse(
-          'https://ad1e-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.login',
-        ),
-        body: {
-          'email': email,
-          'password': password,
-        },
-      );
-
-      var data = jsonDecode(response.body.toString());
-//       {
-//   "message": {
-//     "status": "success",
-//     "message": "Login successful",
-//     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InNlcnZpY2VjbzJAZ21haWwuY29tIn0.av1_O80QOQvFoKYolM3Hx3XHTXkviKHDW9jSYuQROKs",
-//     "user": {
-//       "email": "serviceco2@gmail.com",
-//       "full_name": "Service Co South"
-//     }
-//   }
-// }"
-
-      if (data['message']['status'] == 'success') {
-        var token = data['message']['token'];
-        var userEmail = data['message']['user']['email'];
-        var userName = data['message']['user']['full_name'];
-        var message = data['message']['message'];
-
-        print('Token: $token');
-        print('User Email: $userEmail');
-        print('User Name: $userName');
-        print('Message: $message');
-
-        GoRouter.of(context).go('/home');
-      } else {
-        print('Login failed: ${data['message']['message']}');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,32 +116,34 @@ class _LoginPageState extends State<LoginPage> {
 
   // login button
   Widget _buildLoginButton() {
+    final authViewModel = context.read<AuthViewModel>();
+
     return ElevatedButton(
-        onPressed: () {
-          // login(emailController.text.toString(),
-          //     passwordController.text.toString());
-          GoRouter.of(context).go('/home');
-          // Navigator.push(
-          //   context,
-          //   PageTransition(
-          //     child: mapPage(),
-          //     type: PageTransitionType.fade,
-          //   ),
-          // );
-        },
-        style: ElevatedButton.styleFrom(
-          shape: const StadiumBorder(),
-          elevation: 20,
-          backgroundColor: Pallete.mainFontColor,
-          minimumSize: const Size.fromHeight(60),
+      onPressed: () {
+        Map data = {
+          "email": emailController.text.toString(),
+          "password": passwordController.text.toString(),
+        };
+
+        // Get the instance of AuthViewModel from the provider and call loginRepo
+
+        // Call loginRepo through the instance of AuthViewModel
+        authViewModel.login(data, context);
+      },
+      style: ElevatedButton.styleFrom(
+        shape: const StadiumBorder(),
+        elevation: 20,
+        backgroundColor: Pallete.mainFontColor,
+        minimumSize: const Size.fromHeight(60),
+      ),
+      child: const Text(
+        'Login',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 25,
         ),
-        child: const Text(
-          'Login',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 25,
-          ),
-        ));
+      ),
+    );
   }
 
 // forgot password

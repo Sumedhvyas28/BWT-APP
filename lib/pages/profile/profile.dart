@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_appbar.dart';
 import 'package:flutter_application_1/constants/drawer.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/view_model/user_session.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +16,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    final userPreference = Provider.of<UserSession>(context, listen: false);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'User Profile'),
@@ -55,7 +60,11 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 80),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await userPreference.signOut().then((value) {
+                    context.go('/login');
+                  });
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

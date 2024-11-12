@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/constants/pallete.dart';
+import 'package:flutter_application_1/view_model/user_session.dart';
 import 'dart:async';
-
 import 'package:go_router/go_router.dart';
-
-// fully replacable splash screen
-
-// just for placeholder purpose
-
-// todo ---> splash screen animation riv or json format animations
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,76 +12,41 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _eclipseShrinking = false;
-  bool _logoJumpingAboveCenter = false;
-  bool _logoMovingBackToCenter = false;
+  final UserSession _authService = UserSession();
 
   @override
   void initState() {
     super.initState();
+    _navigateAfterDelay();
+  }
 
-    Timer(const Duration(milliseconds: 500), () {
-      setState(() {
-        _eclipseShrinking = true;
-      });
+  // Checks the login status after a delay and navigates accordingly
+  Future<void> _navigateAfterDelay() async {
+    // Simulate a splash screen delay of 3 seconds
+    await Future.delayed(const Duration(seconds: 5));
 
-      Timer(const Duration(seconds: 1), () {
-        setState(() {
-          _logoJumpingAboveCenter = true;
-        });
+    // Check if the user is logged in
+    final isLoggedIn = await _authService.isLoggedIn();
 
-        Timer(const Duration(seconds: 1), () {
-          setState(() {
-            _logoMovingBackToCenter = true;
-          });
-
-          Timer(const Duration(seconds: 1), () {
-            GoRouter.of(context).go('/onboarding');
-          });
-        });
-      });
-    });
+    // Navigate based on login status
+    if (isLoggedIn) {
+      // If logged in, go to the general DashboardPage
+      context.go('/home');
+    } else {
+      // If not logged in, go to the LoginPage
+      context.go('/onboarding');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaSize = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          Center(
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 1),
-              width: _eclipseShrinking ? 0 : 300,
-              height: _eclipseShrinking ? 0 : 300,
-              decoration: BoxDecoration(
-                color: Pallete.mainFontColor,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: const Duration(seconds: 1),
-            curve: Curves.easeInOut,
-            top: _logoJumpingAboveCenter
-                ? mediaSize.height / 2 - 150
-                : _logoMovingBackToCenter
-                    ? mediaSize.height / 2 - 50
-                    : mediaSize.height / 2 - 50,
-            left: mediaSize.width / 2 - 50,
-            child: AnimatedOpacity(
-              opacity: _eclipseShrinking ? 1.0 : 0.0,
-              duration: const Duration(seconds: 1),
-              child: Image.asset(
-                'assets/logos/logo.png',
-                width: 100,
-                height: 100,
-              ),
-            ),
-          ),
-        ],
+      body: Center(
+        child: Image.asset(
+          'assets/gif/splash_intro.gif', // Path to your GIF asset
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

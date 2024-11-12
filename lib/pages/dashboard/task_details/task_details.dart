@@ -494,13 +494,59 @@ class _TaskDetailsState extends State<TaskDetails> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  item?['item_code'] ??
-                                                      'No Item Code',
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      item?['item_code'] ??
+                                                          'No Item Code',
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Spacer(),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.location_on,
+                                                        color: Pallete
+                                                            .mainFontColor,
+                                                      ),
+                                                      onPressed: () {
+                                                        print(item[
+                                                            'item_location']);
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title: Text(
+                                                                  'Item Location'),
+                                                              content: Text(
+                                                                item['item_location'] ??
+                                                                    'No Item location provided',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(); // Close the dialog
+                                                                  },
+                                                                  child: Text(
+                                                                      'Close'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    )
+                                                  ],
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Text(

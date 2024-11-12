@@ -1,30 +1,18 @@
 import 'dart:io';
 
+String? authToken; // Declare the token as a variable
+
+// Function to set authToken dynamically (for example, after login)
+void setAuthToken(String token) {
+  authToken = token; // Set the token dynamically
+}
+
+// Define dynamic headers
 dynamic getHeader = {
-  HttpHeaders.authorizationHeader:
-      'Bearer 214|UIuQRrxbsjw9LDAtfEynMH2GOyg0fBZkrYQirTBi2ec67929'
+  HttpHeaders.authorizationHeader: authToken != null ? 'Bearer $authToken' : '',
 };
 
 dynamic postHeader = {
   HttpHeaders.contentTypeHeader: 'application/json',
-  HttpHeaders.authorizationHeader:
-      'Bearer 214|UIuQRrxbsjw9LDAtfEynMH2GOyg0fBZkrYQirTBi2ec67929'
+  HttpHeaders.authorizationHeader: authToken != null ? 'Bearer $authToken' : '',
 };
-
-
-// ApiResponse<List<Product>> allProductList = ApiResponse.Loading();
-
-//   setProductList(ApiResponse<List<Product>> response) {
-//     allProductList = response;
-//     notifyListeners();
-//   }
-
-//   Future<void> getAllProduct() async {
-//     setProductList(ApiResponse.Loading());
-//     _myRepo.showProductRepo(getHeader).then((value) {
-//       setProductList(ApiResponse.completed(value));
-//     }).onError((error, stackTrace) {
-//       setProductList(ApiResponse.error(error.toString()));
-//     });
-//     notifyListeners();
-//   }

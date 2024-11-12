@@ -16,45 +16,92 @@ class _mapPageState extends State<mapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomDashApp(title: 'Location'),
-      body: Stack(
-        children: [
-          FlutterMap(
-            options: MapOptions(
-              initialCenter: LatLng(10.725512, 106.723733),
-              initialZoom: 10,
-              interactionOptions:
-                  InteractionOptions(flags: ~InteractiveFlag.doubleTapZoom),
-            ),
-            children: [
-              openStreetMapTileLayer,
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    point: LatLng(10.725512, 106.723733),
-                    width: 60,
-                    height: 60,
-                    alignment: Alignment.centerLeft,
-                    child: Icon(
-                      Icons.location_pin,
-                      size: 60,
-                    ),
-                  ),
-                  Marker(
-                    point: LatLng(10.738016, 106.790482),
-                    width: 60,
-                    height: 60,
-                    alignment: Alignment.centerLeft,
-                    child: Icon(
-                      Icons.location_pin,
-                      color: Colors.red,
-                      size: 60,
-                    ),
-                  ),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            FlutterMap(
+              options: MapOptions(
+                initialCenter: LatLng(10.725512, 106.723733),
+                initialZoom: 10,
+                interactionOptions:
+                    InteractionOptions(flags: ~InteractiveFlag.doubleTapZoom),
               ),
-            ],
-          ),
-        ],
+              children: [
+                openStreetMapTileLayer,
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: LatLng(10.725512, 106.723733),
+                      width: 60,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.location_pin,
+                        size: 60,
+                      ),
+                    ),
+                    Marker(
+                      point: LatLng(10.738016, 106.790482),
+                      width: 60,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red[900],
+                        size: 60,
+                      ),
+                    ),
+                    Marker(
+                      point: LatLng(10.718016, 106.960482),
+                      width: 60,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red[900],
+                        size: 60,
+                      ),
+                    ),
+                    Marker(
+                      point: LatLng(10.778016, 106.660482),
+                      width: 60,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red[900],
+                        size: 60,
+                      ),
+                    ),
+                    Marker(
+                      point: LatLng(10.719016, 106.660482),
+                      width: 60,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red[900],
+                        size: 60,
+                      ),
+                    ),
+                    Marker(
+                      point: LatLng(10.758016, 106.890482),
+                      width: 60,
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red[900],
+                        size: 60,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

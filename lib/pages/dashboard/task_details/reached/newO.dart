@@ -5,6 +5,7 @@ import 'package:flutter_application_1/models/product_description.dart';
 import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/add_symptoms.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/blank2.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/error_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/look_symptoms.dart';
 import 'package:page_transition/page_transition.dart';
@@ -38,11 +39,11 @@ class _NewoState extends State<Newo> {
         _isPunchOutPressed = true;
         _isPunchOutMessage =
             "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
-        Future.delayed(Duration(seconds: 5), () {
+        Future.delayed(Duration(seconds: 3), () {
           Navigator.push(
             context,
             PageTransition(
-              child: DashboardPage(),
+              child: blankNewPage(),
               type: PageTransitionType.fade,
             ),
           );
@@ -296,6 +297,7 @@ class _NewoState extends State<Newo> {
                                             color: Pallete.mainFontColor,
                                           ),
                                           onPressed: () {
+                                            print(item['item_location']);
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {

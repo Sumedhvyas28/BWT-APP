@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/newO.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/reached_location.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:lottie/lottie.dart'; // Add this import for Lottie animations
 
-// 300 m not visible
 class TaskPunch extends StatefulWidget {
   final Map<String, dynamic>? task;
 
@@ -38,7 +37,6 @@ class TaskPunchState extends State<TaskPunch> {
         _fillWidth = _containerWidth * 0.7;
         _showLocations = true;
         _showDistance = true;
-        print(taskData?['name']);
       });
     });
     super.initState();
@@ -54,7 +52,7 @@ class TaskPunchState extends State<TaskPunch> {
       backgroundColor: Colors.white,
       body: Container(
         child: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -72,7 +70,6 @@ class TaskPunchState extends State<TaskPunch> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.grey),
                 ),
-                // for 70 % container to be filled
                 child: Stack(
                   children: [
                     Container(
@@ -97,7 +94,7 @@ class TaskPunchState extends State<TaskPunch> {
               ),
               const SizedBox(height: 10),
 
-              // after delay location below rectangle
+              // Show locations after delay below the rectangle
               if (_showLocations)
                 const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,6 +134,12 @@ class TaskPunchState extends State<TaskPunch> {
                 height: 60,
               ),
 
+              // Placeholder for the Lottie animation
+
+              const SizedBox(
+                height: 20,
+              ),
+
               Container(
                 width: double.infinity,
                 height: 48,
@@ -165,6 +168,13 @@ class TaskPunchState extends State<TaskPunch> {
                       ),
                     ),
                   ),
+                ),
+              ),
+              Center(
+                child: Lottie.asset(
+                  'assets/animations/1.json',
+                  height: 300, // adjust height as needed
+                  width: 300, // adjust width as needed
                 ),
               ),
             ],

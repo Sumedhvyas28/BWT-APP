@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/blank.dart';
 import 'package:go_router/go_router.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -75,25 +76,16 @@ class _ReasonPageState extends State<ReasonPage> {
       _isPunchOutMessage =
           "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
 
-      Future.delayed(Duration(seconds: 5), () {
+      Future.delayed(Duration(seconds: 3), () {
         Navigator.push(
           context,
           PageTransition(
-            child: DashboardPage(),
+            child: blanktPage(),
             type: PageTransitionType.fade,
           ),
         );
       });
     });
-
-    // Delay navigation by 3 seconds if it's a reschedule
-    if (_selectedReason == 'Client request') {
-      // Assuming reschedule corresponds to this reason
-      Future.delayed(Duration(seconds: 3), () {
-        // Navigate to the home (dashboard) page after 3 seconds
-        GoRouter.of(context).go('/home');
-      });
-    }
   }
 
   @override

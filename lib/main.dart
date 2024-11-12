@@ -2,6 +2,9 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/navigation/app_navigation.dart';
+import 'package:flutter_application_1/view_model/auth_view_model.dart';
+import 'package:flutter_application_1/view_model/user_session.dart';
+import 'package:provider/provider.dart';
 // import 'pages/intro_screen/onboarding_screen.dart';
 
 void main() {
@@ -16,9 +19,15 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: AppNavigation.router,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider(create: (_) => UserSession()),
+      ],
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: AppNavigation.router,
+      ),
     );
   }
 }
