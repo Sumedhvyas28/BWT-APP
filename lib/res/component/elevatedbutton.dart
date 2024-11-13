@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 
-class Elevatedbutton extends StatelessWidget {
+class ElevatedbuttonC extends StatelessWidget {
   final String title;
   final bool loading;
   final VoidCallback onPressed;
 
-  const Elevatedbutton(
+  const ElevatedbuttonC(
       {super.key,
       required this.title,
       this.loading = false,

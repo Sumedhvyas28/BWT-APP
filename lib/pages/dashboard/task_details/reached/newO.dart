@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/models/product_description.dart';
 import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/add_symptoms.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert.dart';

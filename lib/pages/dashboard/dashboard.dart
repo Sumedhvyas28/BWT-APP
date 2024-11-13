@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/dashboard/new_page.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/new_task.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_application_1/constants/custom_appbar.dart';
 import 'package:flutter_application_1/constants/drawer.dart';
@@ -49,7 +51,7 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Container(
                   width: double.infinity,
-                  color: Colors.grey[300],
+                  color: Colors.grey.shade200,
                   height: 4.5,
                 ),
                 Padding(
@@ -68,6 +70,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       },
                       selectedColor: Colors.white,
                       fillColor: Colors.blue,
+                      disabledColor: Colors.grey,
                       borderColor: Colors.grey,
                       borderRadius: BorderRadius.circular(30),
                       constraints: BoxConstraints(
@@ -89,27 +92,27 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ),
                 ),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: screenSize.height * 0.01),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildButton('All', Pallete.lineButton1Color, () {},
-                              constraints),
-                          _buildButton('Completed', Pallete.lineButton2Color,
-                              () {}, constraints),
-                          _buildButton('Incomplete', Pallete.lineButton3Color,
-                              () {}, constraints),
-                          _buildButton('Pending', Pallete.lineButton4Color,
-                              () {}, constraints),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                // LayoutBuilder(
+                //   builder: (context, constraints) {
+                //     return Padding(
+                //       padding: EdgeInsets.symmetric(
+                //           vertical: screenSize.height * 0.01),
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //         children: [
+                //           _buildButton('All', Pallete.lineButton1Color, () {},
+                //               constraints),
+                //           _buildButton('Completed', Pallete.lineButton2Color,
+                //               () {}, constraints),
+                //           _buildButton('Incomplete', Pallete.lineButton3Color,
+                //               () {}, constraints),
+                //           _buildButton('Pending', Pallete.lineButton4Color,
+                //               () {}, constraints),
+                //         ],
+                //       ),
+                //     );
+                //   },
+                // ),
                 Expanded(
                   child: Center(
                     child: isSelected[0] ? TasksPage() : const ClientsPage(),

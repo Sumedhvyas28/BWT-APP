@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_details.dart';
+import 'package:flutter_application_1/view_model/user_session.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -16,33 +18,78 @@ class TasksPage extends StatefulWidget {
 class _TasksPageState extends State<TasksPage> {
   Map<String, dynamic>? taskData;
   bool isLoading = true;
+  int? selectedSegment = 0;
+  List<dynamic> filteredTasks = []; // Add a list to store filtered tasks
+
+  Map<int, Color> segmentColors = {
+    0: Colors.blue, // "All" tasks color
+    1: Colors.red, // "Incompleted" tasks color
+    2: Colors.orange, // "Pending" tasks color
+    3: Colors.green, // "Completed" tasks color
+  };
+  void _onSegmentChanged(int? newValue) {
+    setState(() {
+      selectedSegment = newValue;
+
+      if (taskData != null && taskData!['message'] is List) {
+        List<dynamic> tasks = taskData!['message'];
+
+        switch (selectedSegment) {
+          case 0:
+            filteredTasks = tasks;
+            break;
+          case 1:
+            filteredTasks = tasks
+                .where((task) =>
+                    task['completion_status'] == 'Partially Completed')
+                .toList();
+            break;
+          case 2:
+            filteredTasks = tasks
+                .where((task) => task['completion_status'] == 'Pending')
+                .toList();
+            break;
+          case 3:
+            filteredTasks = tasks
+                .where((task) => task['completion_status'] == 'Fully Completed')
+                .toList();
+            break;
+          default:
+            filteredTasks = tasks;
+            break;
+        }
+      } else {
+        filteredTasks = [];
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+
     fetchTaskData();
   }
 
   Future<void> fetchTaskData() async {
     final url = Uri.parse(
-        'https://c36a-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
+        'https://7613-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
 
     try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'token 45a6b57c35c5a19:8fd12351c087d9e',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await http.get(url, headers: {
+        'Authorization': '${GlobalData().token}',
+        'Content-Type': 'application/json'
+      });
 
       print('Response status: ${response.statusCode}');
+      print('Response status: ${GlobalData().token}');
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         setState(() {
           taskData = json.decode(response.body);
           isLoading = false;
+          _onSegmentChanged(selectedSegment);
         });
       } else {
         setState(() {
@@ -62,30 +109,67 @@ class _TasksPageState extends State<TasksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: isLoading
-          ? Center(
-              child: LoadingAnimationWidget.waveDots(
-                color: Pallete.mainFontColor,
-                size: 70,
-              ),
-            )
-          : taskData != null
-              ? _buildTasks(taskData!)
-              : Center(child: Text('Failed to load data')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CupertinoSlidingSegmentedControl<int>(
+              thumbColor: segmentColors[selectedSegment] ?? Colors.blue,
+              backgroundColor: Colors.grey.shade300,
+              groupValue: selectedSegment,
+              children: {
+                0: Text(
+                  "All",
+                  style: TextStyle(
+                      color:
+                          selectedSegment == 0 ? Colors.white : Colors.black),
+                ),
+                1: Text(
+                  "Incomplete",
+                  style: TextStyle(
+                      color:
+                          selectedSegment == 1 ? Colors.white : Colors.black),
+                ),
+                2: Text(
+                  "Pending",
+                  style: TextStyle(
+                      color:
+                          selectedSegment == 2 ? Colors.white : Colors.black),
+                ),
+                3: Text(
+                  "Completed",
+                  style: TextStyle(
+                      color:
+                          selectedSegment == 3 ? Colors.white : Colors.black),
+                ),
+              },
+              onValueChanged: _onSegmentChanged,
+            ),
+          ),
+          Expanded(
+            child: isLoading
+                ? Center(
+                    child: LoadingAnimationWidget.waveDots(
+                      color: Pallete.mainFontColor,
+                      size: 70,
+                    ),
+                  )
+                : filteredTasks.isNotEmpty
+                    ? _buildTasks(filteredTasks)
+                    : Center(child: Text('No tasks available')),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildTasks(Map<String, dynamic> taskData) {
-    final tasks = taskData['message']; // This is an array of task objects
-
+  Widget _buildTasks(List<dynamic> tasks) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
-
-        final mntcTime = task['mntc_time']?.substring(0, 8) ??
-            'No Time'; // Extracting "HH:MM:SS" format
+        final mntcTime = task['mntc_time']?.substring(0, 8) ?? 'No Time';
         Html(
           data: 'Description: ${task['description']}',
           style: {
@@ -131,20 +215,7 @@ class _TasksPageState extends State<TasksPage> {
                 ),
                 // Divider
                 const SizedBox(width: 10),
-                // Column(
-                //   children: [
-                //     Container(
-                //       width: 2,
-                //       height: 50, // Set height according to your layout
-                //       color: (task['completion_status'] == 'completed')
-                //           ? Colors.green // Color for completed
-                //           : (task['completion_status'] == 'incomplete')
-                //               ? Colors.red // Color for incomplete
-                //               : Pallete
-                //                   .lineButton4Color, // Default color for pending
-                //     ),
-                //   ],
-                // ),
+
                 const SizedBox(width: 10),
 
                 const SizedBox(width: 10),
@@ -206,18 +277,23 @@ class _TasksPageState extends State<TasksPage> {
                                 const SizedBox(width: 15),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Handle button click logic
+                                    // Handle button click logic if needed
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: (task[
                                                 'completion_status'] ==
-                                            'completed')
+                                            'Fully Completed')
                                         ? Colors.green // Color for completed
                                         : (task['completion_status'] ==
-                                                'incomplete')
-                                            ? Colors.red // Color for incomplete
-                                            : Pallete
-                                                .lineButton4Color, // Default color for pending
+                                                'Partially Completed')
+                                            ? Colors
+                                                .red // Color for incomplete (or partially completed)
+                                            : (task['completion_status'] ==
+                                                    'Pending')
+                                                ? Colors
+                                                    .orange // Color for pending
+                                                : Pallete
+                                                    .lineButton4Color, // Default color for other statuses
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 0),
                                     minimumSize: const Size(40, 30),
@@ -226,8 +302,8 @@ class _TasksPageState extends State<TasksPage> {
                                     ),
                                   ),
                                   child: Text(
-                                    task[
-                                        'completion_status'], // Displaying the status text
+                                    _getStatusText(task[
+                                        'completion_status']), // Display the status text based on the condition
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.white,
@@ -243,9 +319,12 @@ class _TasksPageState extends State<TasksPage> {
                               children: [
                                 Icon(Icons.person, size: 20),
                                 const SizedBox(width: 10),
-                                Text(
-                                  'Created by  : ${task['owner']}',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                Expanded(
+                                  child: Text(
+                                    'Created by  :   ${task['owner']}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               ],
                             ),
@@ -314,5 +393,21 @@ class _TasksPageState extends State<TasksPage> {
         );
       },
     );
+  }
+
+  String _getStatusText(String completionStatus) {
+    switch (completionStatus) {
+      case 'All':
+        return 'All';
+      case 'Fully Completed':
+        return 'Completed'; // Change Fully Completed to Complete
+      case 'Partially Completed':
+        return 'Incomplete'; // Change Partially Completed to Incomplete
+      case 'Pending':
+        return 'Pending'; // Keep Pending as Pending
+
+      default:
+        return completionStatus; // Default case for unknown status
+    }
   }
 }

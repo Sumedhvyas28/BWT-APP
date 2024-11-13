@@ -12,7 +12,6 @@ class UserSession with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final userData = prefs.getString('userData');
 
-    print('lololllffffffffffff//');
     if (userData != null) {
       return jsonDecode(userData);
     }
@@ -28,15 +27,27 @@ class UserSession with ChangeNotifier {
     final userData = await getUserData();
     return userData != null;
   }
+
+  Future<void> loadUserDataIntoGlobal() async {
+    final userData = await getUserData();
+    if (userData != null) {
+      GlobalData().updateUserData(
+        newId: userData['id'] ?? '',
+        newName: userData['name'] ?? '',
+        newEmail: userData['email'] ?? '',
+        newPhnNo: userData['phnNo'] ?? '',
+        newCountry: userData['country'] ?? '',
+        newRole: userData['role'] ?? '',
+        newApiToken:
+            userData['authToken'] ?? '', // Ensure the key matches stored data
+      );
+    }
+  }
 }
 
 class GlobalData {
   static final GlobalData _instance = GlobalData._internal();
-
-  factory GlobalData() {
-    return _instance;
-  }
-
+  factory GlobalData() => _instance;
   GlobalData._internal();
 
   String id = '';
@@ -47,7 +58,6 @@ class GlobalData {
   String role = '';
   String token = '';
 
-  // Method to update global variables based on user data
   void updateUserData({
     required String newId,
     required String newName,

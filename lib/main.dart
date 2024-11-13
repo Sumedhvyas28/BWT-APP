@@ -7,7 +7,10 @@ import 'package:flutter_application_1/view_model/user_session.dart';
 import 'package:provider/provider.dart';
 // import 'pages/intro_screen/onboarding_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSession()
+      .loadUserDataIntoGlobal(); // Load stored user data into GlobalData
   runApp(DevicePreview(
     enabled: !kReleaseMode,
     builder: (context) => const App(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/pages/dashboard/new_page.dart';
+import 'package:flutter_application_1/pages/dashboard/task_page.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ShimmerWidgetPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class _ShimmerWidgetPageState extends State<ShimmerWidgetPage> {
       // Redirect to the next page after 2 seconds
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => NewPage()),
+        MaterialPageRoute(builder: (context) => TasksPage()),
       );
     });
   }

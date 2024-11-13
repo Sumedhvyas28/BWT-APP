@@ -28,12 +28,12 @@ class AuthViewModel with ChangeNotifier {
   }
 
   dynamic header = {
-    HttpHeaders.authorizationHeader: 'Bearer ${GlobalData().token}'
+    HttpHeaders.authorizationHeader: 'token ${GlobalData().token}'
   };
 
   dynamic header1 = {
     HttpHeaders.contentTypeHeader: 'application/json',
-    HttpHeaders.authorizationHeader: 'Bearer ${GlobalData().token}'
+    HttpHeaders.authorizationHeader: 'token ${GlobalData().token}'
   };
 
   ApiResponse userData = ApiResponse.loading();
@@ -66,7 +66,7 @@ class AuthViewModel with ChangeNotifier {
             response['message']['user']['api_secret']?.toString() ?? '';
 
         // Construct the authorization token (adjust format if needed)
-        final authorizationToken = 'Bearer $apiKey:$apiSecret';
+        final authorizationToken = 'token $apiKey:$apiSecret';
 
         // Store user data with the authorization token
         final userData = {
