@@ -20,6 +20,10 @@ class TaskDetails extends StatefulWidget {
 
 class _TaskDetailsState extends State<TaskDetails> {
   Map<String, dynamic>? taskData;
+  List<Map<String, dynamic>> items = [];
+  List<Map<String, dynamic>> symptoms = [];
+  List<dynamic> spareItems = []; // Change to dynamic to avoid redefinition
+  List<bool> isSelected = [];
   bool isLoading = true;
 
   @override
@@ -28,47 +32,36 @@ class _TaskDetailsState extends State<TaskDetails> {
 
     if (widget.task != null) {
       taskData = widget.task;
+      final checktreeDescription = taskData?['checktree_description'] ?? {};
+      final symptomsTable = taskData?['symptoms_table'] ?? {};
+      spareItems = taskData?['spare_items'] ?? [];
+
+      print('///////////fq/q//');
+      print(checktreeDescription);
+
+      symptomsTable.forEach((key, value) {
+        if (value is List) {
+          symptoms.addAll(List<Map<String, dynamic>>.from(value));
+        }
+      });
+
+      // Flatten the nested structure and populate items list
+      checktreeDescription.forEach((key, value) {
+        if (value is List) {
+          items.addAll(List<Map<String, dynamic>>.from(value));
+        }
+      });
+
+      // Initialize the isSelected list based on the 'collected' value in spareItems
+      isSelected = spareItems.map((item) {
+        return item['collected'] == 'Yes';
+      }).toList();
+
       isLoading = false;
     } else {
-      // fetchTaskData();
       throw Exception('Failed to load task data');
     }
   }
-
-  // Future<void> fetchTaskData() async {
-  //   final url = Uri.parse(
-  //     'https://403a-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance',
-  //   );
-
-  //   try {
-  //     final response = await http.get(
-  //       url,
-  //       headers: {
-  //         'Authorization': 'token 45a6b57c35c5a19:8fd12351c087d9e',
-  //         'Content-Type': 'application/json',
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         taskData = json.decode(response.body);
-  //         isLoading = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //       throw Exception('Failed to load task data');
-  //     }
-  //   } catch (e) {
-  //     print('Error occurred: $e');
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
-
-  List<bool> isSelected = [];
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +75,6 @@ class _TaskDetailsState extends State<TaskDetails> {
     print(task?['spare_items']);
 
     // Initialize spareItems and isSelected here
-    List<dynamic> spareItems = task?['spare_items'] ?? [];
     if (isSelected.length != spareItems.length) {
       isSelected = List<bool>.filled(spareItems.length, false);
     }
@@ -472,6 +464,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                   itemCount: spareItems.length,
                                   itemBuilder: (context, index) {
                                     final item = spareItems[index];
+                                    print(spareItems[index]['collected']);
 
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -486,6 +479,11 @@ class _TaskDetailsState extends State<TaskDetails> {
                                               setState(() {
                                                 isSelected[index] =
                                                     newBool ?? false;
+                                                // Update collected status in spareItems based on checkbox
+                                                spareItems[index]['collected'] =
+                                                    isSelected[index]
+                                                        ? 'Yes'
+                                                        : 'No';
                                               });
                                             },
                                           ),
@@ -497,7 +495,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                                 Row(
                                                   children: [
                                                     Text(
-                                                      item?['item_code'] ??
+                                                      item['item_code'] ??
                                                           'No Item Code',
                                                       style: const TextStyle(
                                                         fontSize: 14,
