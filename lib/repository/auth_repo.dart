@@ -38,6 +38,24 @@ class AuthRepository {
     }
   }
 
+  Future<dynamic> updateSpareItems(dynamic data) async {
+    print(jsonEncode(data));
+    print('fetching');
+    try {
+      // Convert the data to JSON if not already done in `getPostApiResponse`
+      final response = await _apiServices.getPostApiWithHeaderResponse(
+          AppUrl.loginUrl, jsonEncode(data), postHeader);
+      print('yes');
+
+      return response;
+    } catch (e) {
+      print('lololfffffffffffff');
+      print('❌❌❌ Login repo ----- $e');
+
+      throw e;
+    }
+  }
+
   Future<UserData> getUserDataRepo(dynamic header) async {
     try {
       dynamic response = await _apiServices.getGetApiWithHeaderResponse(
