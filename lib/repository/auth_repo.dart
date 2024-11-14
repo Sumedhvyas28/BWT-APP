@@ -7,6 +7,7 @@ import 'package:flutter_application_1/models/going_for_visit.dart';
 import 'package:flutter_application_1/models/user_data.dart';
 import 'package:flutter_application_1/view_model/get_main.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
+import 'package:http/http.dart' as http;
 
 class AuthRepository {
   BaseApiServices _apiServices = NetworkApiService();
@@ -72,21 +73,29 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, dynamic>> goingForVisit(
-      String name, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> goingForVisit(String name) async {
+    // Hardcoded JSON data for API request
+    final data = jsonEncode({
+      "name": "MAT-MVS-2024-00002",
+    });
+
     final headers = {
       'Authorization': "${GlobalData().token}",
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/json",
     };
+
     try {
+      print(
+          "Request data: $data"); // Debugging output to confirm request payload
+
       final response = await _apiServices.getPostApiWithHeaderResponse(
         AppUrl.goingForVisitUrl,
-        data,
+        data, // Send JSON-encoded string
         headers,
       );
 
       print("Response from API: $response");
-      return response; // Make sure this returns the expected data
+      return response;
     } catch (e) {
       print("Error in API call: $e");
       rethrow;
@@ -101,6 +110,36 @@ class AuthRepository {
     } catch (e) {
       print('❌❌ Error in getUserDataRepo Repo ${e}');
       throw e;
+    }
+  }
+
+  Future<Map<String, dynamic>> punchInOut(String name) async {
+    // Construct the request data dynamically using the provided `name`
+    final data = {
+      "maintenance_visit": name, // Using the dynamic name parameter here
+      "punch_in": true, // As per your request body
+    };
+
+    final headers = {
+      'Authorization': "${GlobalData().token}",
+      "Content-Type": "application/json",
+    };
+
+    try {
+      print(
+          "Request data: ${jsonEncode(data)}"); // Debugging output to confirm request payload
+
+      final response = await _apiServices.getPostApiWithHeaderResponse(
+        AppUrl.punchInUrl, // Ensure you have the correct API URL
+        jsonEncode(data), // Send JSON-encoded string
+        headers,
+      );
+
+      print("Response from API: $response");
+      return response;
+    } catch (e) {
+      print("Error in API call: $e");
+      rethrow;
     }
   }
 }

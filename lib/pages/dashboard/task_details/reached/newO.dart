@@ -7,7 +7,9 @@ import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/blank2.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/error_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/look_symptoms.dart';
+import 'package:flutter_application_1/view_model/feature_view.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class Newo extends StatefulWidget {
   const Newo({super.key, this.task});
@@ -167,17 +169,39 @@ class _NewoState extends State<Newo> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
                       _isPunchPressed = !_isPunchPressed;
                     });
+
+                    // Call the punchInRepo API when the button is pressed
+                    if (_isPunchPressed) {
+                      // Assuming you have a way to pass the "name" value, like from a user or session data
+                      final featureView =
+                          Provider.of<FeatureView>(context, listen: false);
+
+                      // Example name, replace with actual data
+                      String userName =
+                          "MAT-MVS-2024-00002"; // Use the appropriate value for the user
+
+                      await featureView.punchInRepo(userName); // API call
+
+                      // Handle UI feedback if needed after the punch-in is complete (e.g., show a message)
+                      if (featureView.message != null) {
+                        // Optionally show a success or error message from the API response
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(featureView.message!),
+                        ));
+                      }
+                    }
                   },
                   child: Text(
                     _isPunchPressed ? 'PUNCHED IN' : 'PUNCH IN FOR THE JOB',
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

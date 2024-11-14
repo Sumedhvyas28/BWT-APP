@@ -30,8 +30,10 @@ class _TaskDetailsState extends State<TaskDetails> {
   List<bool> isSelected = [];
   bool isLoading = true;
   late FeatureView featureView;
+  String buttonText = 'Going For Visit';
+  Color buttonColor = Pallete.mainFontColor;
+  bool isButtonEnabled = true; // Variable to control button state
 
-  // Fetch initial data from widget.task or call API if needed
   @override
   void initState() {
     super.initState();
@@ -133,10 +135,10 @@ class _TaskDetailsState extends State<TaskDetails> {
     final mntcTime = task?['mntc_time']?.substring(0, 8) ??
         'No Time'; // Extracting "HH:MM:SS" format
 
-    final visit = task['visit_start'];
+    final visit_name = task['visit_start'];
 
     print('/////////////////////////////////////////////////////');
-    print(task['visit_start']);
+    print(task['name']);
 
     // print(task['spare_items']);
 
@@ -177,38 +179,56 @@ class _TaskDetailsState extends State<TaskDetails> {
         );
       } else {
         // Check if visit is null
-        if (visit == null) {
-          print('lolllllllllll  null');
+        if (visit_name == null) {
+          setState(() {
+            isButtonEnabled = true; // Disable button when visit is null
+
+            buttonText = 'Visit Not Available';
+            buttonColor = Colors.red; // Update to your desired color
+          });
+          print('Visit is null - calling API with fallback value.');
+
           final featureViewModel = context.read<FeatureView>();
 
-          await featureViewModel.goingForVisitRepo(
-              visit); // Ensure API completes before proceeding
+          // Use a fallback value for the API call if `visit` is null
+          const String fallbackVisitName = "default_visit_name";
+          await featureViewModel.goingForVisitRepo(fallbackVisitName);
 
-          // Handle loading state or message if necessary before navigation
+          // Check if the API call is still loading
           if (featureViewModel.isLoading) {
             print("Loading in progress...");
-            // You may show a loading indicator here until the API response is received
-            return;
+            return; // Exit and wait for loading to complete
           }
 
-          // Proceed with navigation after the API call
-          Navigator.push(
-            context,
-            PageTransition(
-              child: TaskPunch(
-                task: task,
+          // Verify if the API call was successful
+          if (featureViewModel.message!.contains("success")) {
+            // Navigate to the next page only if the API call was successful
+            Navigator.push(
+              context,
+              PageTransition(
+                child: TaskPunch(task: task),
+                type: PageTransitionType.fade,
               ),
-              type: PageTransitionType.fade,
-            ),
-          );
+            );
+          } else {
+            setState(() {
+              isButtonEnabled = false; // Disable button when visit is null
+
+              buttonText = 'Going For Visit';
+              buttonColor = Pallete.mainFontColor;
+            });
+            // Handle API failure and log the error message
+            print("API call failed: ${featureViewModel.message}");
+            // Optionally, display an error message to the user
+            return;
+          }
         } else {
-          print('witout null');
+          // If `visit` is not null, proceed directly to the next page
+          print('Visit is not null - navigating directly.');
           Navigator.push(
             context,
             PageTransition(
-              child: TaskPunch(
-                task: task,
-              ),
+              child: TaskPunch(task: task),
               type: PageTransitionType.fade,
             ),
           );
@@ -596,49 +616,53 @@ class _TaskDetailsState extends State<TaskDetails> {
                                                 value: spareItems[index]
                                                         ['collected'] ==
                                                     'yes', // Check if collected is 'yes'
-                                                onChanged: (newBool) async {
-                                                  setState(() {
-                                                    spareItems[index]
-                                                            ['collected'] =
-                                                        newBool == true
-                                                            ? 'yes'
-                                                            : 'no';
-                                                  });
+                                                onChanged: visit_name == null
+                                                    ? null // Disable the checkbox if visit is null
+                                                    : (newBool) async {
+                                                        setState(() {
+                                                          spareItems[index][
+                                                                  'collected'] =
+                                                              newBool == true
+                                                                  ? 'yes'
+                                                                  : 'no';
+                                                        });
 
-                                                  String name =
-                                                      spareItems[index]['name'];
-                                                  String status =
-                                                      spareItems[index]
-                                                              ['collected'] ??
-                                                          'no';
+                                                        String name =
+                                                            spareItems[index]
+                                                                ['name'];
+                                                        String status = spareItems[
+                                                                    index]
+                                                                ['collected'] ??
+                                                            'no';
 
-                                                  // Debugging: Check what data is being sent to the API
-                                                  print(
-                                                      'Updating spare item: Name: $name, Status: $status');
+                                                        // Debugging: Check what data is being sent to the API
+                                                        print(
+                                                            'Updating spare item: Name: $name, Status: $status');
 
-                                                  await featureView
-                                                      .updateSpareItem(
-                                                          name, status);
+                                                        await featureView
+                                                            .updateSpareItem(
+                                                                name, status);
 
-                                                  await featureView
-                                                      .saveCheckboxState(
-                                                          isSelected);
+                                                        await featureView
+                                                            .saveCheckboxState(
+                                                                isSelected);
 
-                                                  if (featureView.message !=
-                                                      null) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                            featureView
-                                                                .message!),
-                                                      ),
-                                                    );
-                                                    print(
-                                                        'API Response: ${featureView.message}');
-                                                  }
-                                                },
+                                                        if (featureView
+                                                                .message !=
+                                                            null) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                  featureView
+                                                                      .message!),
+                                                            ),
+                                                          );
+                                                          print(
+                                                              'API Response: ${featureView.message}');
+                                                        }
+                                                      },
                                               ),
                                               Expanded(
                                                 child: Column(
@@ -734,9 +758,11 @@ class _TaskDetailsState extends State<TaskDetails> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 )),
-                            onPressed: checkAndNavigate,
-                            child: const Text(
-                              'Going For Visit',
+                            onPressed: isButtonEnabled
+                                ? checkAndNavigate
+                                : null, // Disable the button when `isButtonEnabled` is false
+                            child: Text(
+                              buttonText,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,

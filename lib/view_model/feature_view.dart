@@ -80,18 +80,46 @@ class FeatureView with ChangeNotifier {
     };
 
     try {
-      final response = await _myRepo.goingForVisit(name, data);
-
+      final response = await _myRepo.goingForVisit(name);
       print("Response from goingForVisit API: $response");
 
       if (response != null && response['message'] != null) {
-        print(response);
+        _message = response['message']['message'];
       } else {
         _message = 'Request failed or invalid response';
       }
     } catch (e) {
       _message = 'An error occurred: $e';
       print('Error in goingForVisit: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> punchInRepo(String name) async {
+    print("API called with name: $name");
+    _isLoading = true;
+    notifyListeners();
+
+    final Map<String, dynamic> data = {
+      'name': name,
+    };
+
+    try {
+      final response = await _myRepo
+          .punchInOut(name); // Call the punchIn method from the repository
+      print("Response from punchIn API: $response");
+
+      if (response != null && response['message'] != null) {
+        _message = response['message']
+            ['message']; // Assign the message from the response
+      } else {
+        _message = 'Request failed or invalid response';
+      }
+    } catch (e) {
+      _message = 'An error occurred: $e';
+      print('Error in punchIn: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
