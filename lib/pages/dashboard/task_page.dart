@@ -73,7 +73,7 @@ class _TasksPageState extends State<TasksPage> {
 
   Future<void> fetchTaskData() async {
     final url = Uri.parse(
-        'https://7613-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
+        'https://54e1-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
 
     try {
       final response = await http.get(url, headers: {
@@ -169,7 +169,10 @@ class _TasksPageState extends State<TasksPage> {
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
+        print('/////////////');
+        print(task);
         final mntcTime = task['mntc_time']?.substring(0, 8) ?? 'No Time';
+        final name = task['name'];
         Html(
           data: 'Description: ${task['description']}',
           style: {
@@ -226,7 +229,7 @@ class _TasksPageState extends State<TasksPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => TaskDetails(
-                            task: task,
+                            task: name,
                           ),
                         ),
                       );

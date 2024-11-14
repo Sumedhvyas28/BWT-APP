@@ -23,7 +23,11 @@ dynamic postHeader = {
 //   'Content-Type': 'application/json',
 // };
 
-dynamic getHeader2 = {
-  'Authorization': 'token ${GlobalData().token}',
-  'Content-Type': 'application/json'
-};
+// dynamic getHeader2 = {
+//   'Authorization': 'token ${GlobalData().token}',
+//   'Content-Type': 'application/json'
+// };
+
+Map<String, String> getHeader2() {
+  return {"Authorization": 'token ${GlobalData().token}'};
+}
