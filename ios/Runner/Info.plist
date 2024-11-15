@@ -45,5 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location for...</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location for...</string>
+
+
+	<key>NSCameraUsageDescription</key>
+	<string>Your message to the user explaining why you need the camera.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Your message to the user explaining why you need access to the photo library.</string>
+
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your app needs access to the microphone.</string>
+
+
+
 </dict>
 </plist>

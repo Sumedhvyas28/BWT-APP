@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   // Checks the login status after a delay and navigates accordingly
   Future<void> _navigateAfterDelay() async {
     // Simulate a splash screen delay of 3 seconds
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 4));
 
     // Check if the user is logged in
     final isLoggedIn = await _authService.isLoggedIn();

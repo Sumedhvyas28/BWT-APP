@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_application_1/constants/api_constant/routes/api_routes.dart';
 import 'package:flutter_application_1/data/network/BaseApiService.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_application_1/models/user_data.dart';
 import 'package:flutter_application_1/view_model/get_main.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class AuthRepository {
   BaseApiServices _apiServices = NetworkApiService();
@@ -74,9 +76,8 @@ class AuthRepository {
   }
 
   Future<Map<String, dynamic>> goingForVisit(String name) async {
-    // Hardcoded JSON data for API request
     final data = jsonEncode({
-      "name": "MAT-MVS-2024-00002",
+      "name": name, // Use the provided `name` value
     });
 
     final headers = {
@@ -140,6 +141,100 @@ class AuthRepository {
     } catch (e) {
       print("Error in API call: $e");
       rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> punchOut(String name) async {
+    // Construct the request data dynamically using the provided `name`
+    final data = {
+      "maintenance_visit": name, // Using the dynamic name parameter here
+      "punch_out": true, // As per your request body
+    };
+
+    final headers = {
+      'Authorization': "${GlobalData().token}",
+      "Content-Type": "application/json",
+    };
+
+    try {
+      print(
+          "Request data: ${jsonEncode(data)}"); // Debugging output to confirm request payload
+
+      final response = await _apiServices.getPostApiWithHeaderResponse(
+        AppUrl.punchInUrl, // Ensure you have the correct API URL
+        jsonEncode(data), // Send JSON-encoded string
+        headers,
+      );
+
+      print("Response from API: $response");
+      return response;
+    } catch (e) {
+      print("Error in API call: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> postLocation(String data) async {
+    try {
+      final response = await _apiServices.getPostApiResponse(
+        AppUrl.fetchLocation, // Ensure this is your correct API endpoint
+        data, // Sending the JSON-encoded string
+      );
+      return response;
+    } catch (e) {
+      print("Error in posting location data: $e");
+      rethrow;
+    }
+  }
+
+  // add iamge save api here
+
+  Future<Map<String, dynamic>> postImageWithMaintenanceVisitRepo(
+      String maintenanceVisit, File image) async {
+    // Construct the headers for the request
+    final headers = {
+      'Authorization': "${GlobalData().token}",
+      "Content-Type":
+          "multipart/form-data", // Content-Type is form-data since we're sending a file
+    };
+
+    try {
+      // API URL to which the request will be sent
+      var uri = Uri.parse(
+          AppUrl.postAttachmentUrl); // Replace with your actual API URL
+
+      // Prepare the multipart request
+      var request = http.MultipartRequest('POST', uri);
+
+      // Add the headers
+      request.headers.addAll(headers);
+
+      // Add the text field (maintenance_visit)
+      request.fields['maintenance_visit'] = maintenanceVisit;
+
+      // Add the image file
+      var imageFile = await http.MultipartFile.fromPath(
+        'image', // Field name for the image (must match the backend field name)
+        image.path,
+        contentType: MediaType('image', 'jpeg'),
+      );
+      request.files.add(imageFile);
+
+      // Send the request
+      var response = await request.send();
+
+      // Handle response
+      if (response.statusCode == 200) {
+        print("Image and data uploaded successfully");
+        final responseData = await http.Response.fromStream(response);
+        return jsonDecode(responseData.body); // Return the response body
+      } else {
+        print('Failed to upload image. Status Code: ${response.statusCode}');
+        return {'error': 'Failed to upload image'};
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+      throw e;
     }
   }
 }

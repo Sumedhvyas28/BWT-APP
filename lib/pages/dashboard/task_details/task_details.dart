@@ -30,7 +30,7 @@ class _TaskDetailsState extends State<TaskDetails> {
   List<bool> isSelected = [];
   bool isLoading = true;
   late FeatureView featureView;
-  String buttonText = 'Going For Visit';
+  String buttonText = '';
   Color buttonColor = Pallete.mainFontColor;
   bool isButtonEnabled = true; // Variable to control button state
 
@@ -64,7 +64,7 @@ class _TaskDetailsState extends State<TaskDetails> {
     // Dynamically use widget.task for the task name in the URL
     final String task = widget.task; // Use the task passed to the widget
     final String url =
-        'https://54e1-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance_?name=$task';
+        'https://124a-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance_?name=$task';
 
     setState(() => isLoading = true); // Show loading indicator during fetch
 
@@ -136,6 +136,7 @@ class _TaskDetailsState extends State<TaskDetails> {
         'No Time'; // Extracting "HH:MM:SS" format
 
     final visit_name = task['visit_start'];
+    final visiter_name = task['name'];
 
     print('/////////////////////////////////////////////////////');
     print(task['name']);
@@ -146,7 +147,6 @@ class _TaskDetailsState extends State<TaskDetails> {
     if (isSelected.length != spareItems.length) {
       isSelected = List<bool>.filled(spareItems.length, false);
     }
-
     void checkAndNavigate() async {
       // Check if any checkbox is not selected
       if (isSelected.contains(false)) {
@@ -178,31 +178,33 @@ class _TaskDetailsState extends State<TaskDetails> {
           ),
         );
       } else {
-        // Check if visit is null
-        if (visit_name == null) {
-          setState(() {
-            isButtonEnabled = true; // Disable button when visit is null
-
-            buttonText = 'Visit Not Available';
-            buttonColor = Colors.red; // Update to your desired color
-          });
+        // If visit_name is not null, enable the button
+        if (visit_name != null) {
+          print('Visit is not null - enabling the button and navigating.');
+          Navigator.push(
+            context,
+            PageTransition(
+              child: TaskPunch(task: task),
+              type: PageTransitionType.fade,
+            ),
+          );
+        } else {
           print('Visit is null - calling API with fallback value.');
 
           final featureViewModel = context.read<FeatureView>();
 
-          // Use a fallback value for the API call if `visit` is null
-          const String fallbackVisitName = "default_visit_name";
-          await featureViewModel.goingForVisitRepo(fallbackVisitName);
+          await featureViewModel.goingForVisitRepo(visiter_name);
+          print(visiter_name);
 
-          // Check if the API call is still loading
           if (featureViewModel.isLoading) {
             print("Loading in progress...");
             return; // Exit and wait for loading to complete
           }
 
           // Verify if the API call was successful
-          if (featureViewModel.message!.contains("success")) {
-            // Navigate to the next page only if the API call was successful
+          if (featureViewModel.message != null &&
+              featureViewModel.message!.contains("success")) {
+            print('lolll');
             Navigator.push(
               context,
               PageTransition(
@@ -211,29 +213,18 @@ class _TaskDetailsState extends State<TaskDetails> {
               ),
             );
           } else {
-            setState(() {
-              isButtonEnabled = false; // Disable button when visit is null
-
-              buttonText = 'Going For Visit';
-              buttonColor = Pallete.mainFontColor;
-            });
-            // Handle API failure and log the error message
-            print("API call failed: ${featureViewModel.message}");
-            // Optionally, display an error message to the user
+            print(
+                "API call failed or message is null: ${featureViewModel.message}");
             return;
           }
-        } else {
-          // If `visit` is not null, proceed directly to the next page
-          print('Visit is not null - navigating directly.');
-          Navigator.push(
-            context,
-            PageTransition(
-              child: TaskPunch(task: task),
-              type: PageTransitionType.fade,
-            ),
-          );
         }
       }
+    }
+
+    if (visit_name == null) {
+      buttonText = 'Going for visit ';
+    } else {
+      buttonText = 'Have a look';
     }
 
     // double screenWidth = MediaQuery.of(context).size
@@ -488,8 +479,9 @@ class _TaskDetailsState extends State<TaskDetails> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 18, right: 8),
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  left: 18, right: 8, top: 8, bottom: 8),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -504,10 +496,20 @@ class _TaskDetailsState extends State<TaskDetails> {
                                   SizedBox(
                                     height: 4,
                                   ),
-                                  Text(
-                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
-                                    style: TextStyle(fontSize: 13),
-                                  )
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Html(
+                                        data: task?['customer_query']
+                                                ?.toString() ??
+                                            'No customer query', // Convert to String to ensure non-null
+                                        style: {
+                                          "body": Style(
+                                            fontSize: FontSize(14),
+                                          ),
+                                        },
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -547,6 +549,21 @@ class _TaskDetailsState extends State<TaskDetails> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Html(
+                                        data: task?['description'] ??
+                                            'no description available',
+                                        style: {
+                                          "body": Style(
+                                            fontSize: FontSize(14),
+                                          ),
+                                        },
+                                      ),
+                                    ),
+                                  ),
+
                                   SizedBox(height: 8),
                                   // Expanded(
                                   //   child: SingleChildScrollView(
@@ -615,9 +632,9 @@ class _TaskDetailsState extends State<TaskDetails> {
                                               Checkbox(
                                                 value: spareItems[index]
                                                         ['collected'] ==
-                                                    'yes', // Check if collected is 'yes'
-                                                onChanged: visit_name == null
-                                                    ? null // Disable the checkbox if visit is null
+                                                    'yes',
+                                                onChanged: visit_name != null
+                                                    ? null
                                                     : (newBool) async {
                                                         setState(() {
                                                           spareItems[index][
@@ -635,7 +652,6 @@ class _TaskDetailsState extends State<TaskDetails> {
                                                                 ['collected'] ??
                                                             'no';
 
-                                                        // Debugging: Check what data is being sent to the API
                                                         print(
                                                             'Updating spare item: Name: $name, Status: $status');
 

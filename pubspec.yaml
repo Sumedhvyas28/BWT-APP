@@ -63,6 +63,14 @@ dependencies:
   positioned_tap_detector_2: ^1.0.4
   transparent_image: ^2.0.1
   proj4dart: ^2.1.0
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
+  get: ^4.6.6
+  location: ^7.0.1
+  geolocator: ^13.0.2
+  http_parser: ^4.0.2
+  path_provider: ^2.1.5
+  
 
 dev_dependencies:
   flutter_test:

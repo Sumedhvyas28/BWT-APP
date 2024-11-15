@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
@@ -7,8 +10,12 @@ import 'package:flutter_application_1/pages/dashboard/task_details/reached/alert
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/blank2.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/error_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/look_symptoms.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/reached/upload_image/service.dart';
 import 'package:flutter_application_1/view_model/feature_view.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class Newo extends StatefulWidget {
@@ -29,40 +36,75 @@ class _NewoState extends State<Newo> {
   List<Map<String, dynamic>> items = [];
   List<Map<String, dynamic>> symptoms = [];
   List<bool> isSelected = [];
+  String isImageUploade = "";
+  final ImagePicker _picker = ImagePicker();
+  File? _imageFile;
+
+  // Method to pick and store the image
+  Future<void> _takePicture() async {
+    // Pick image from the camera
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      // Get the directory to store the image
+      final directory = await getApplicationDocumentsDirectory();
+      final name = DateTime.now()
+          .millisecondsSinceEpoch
+          .toString(); // Generate a unique name for the image
+      final imagePath = '${directory.path}/$name.jpg';
+
+      // Copy the image to the local directory
+      final File storedImage = await File(image.path).copy(imagePath);
+
+      setState(() {
+        _imageFile = storedImage; // Store the image file
+      });
+
+      print("Image saved at: ${storedImage.path}");
+    } else {
+      print("No image selected.");
+    }
+  }
+
+  void _uploadImage(BuildContext context) async {
+    if (_imageFile != null) {
+      try {
+        String maintenanceVisit =
+            taskData?['name']; // Example maintenance visit ID
+
+        // Calling the ViewModel to upload the image
+        await Provider.of<FeatureView>(context, listen: false)
+            .postImageWithMaintenanceVisit(maintenanceVisit, _imageFile!);
+
+        final viewModel = Provider.of<FeatureView>(context, listen: false);
+
+        if (viewModel.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${viewModel.errorMessage}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Image uploaded successfully')),
+          );
+          setState(() {
+            _imageFile = null; // Clear the image after upload
+          });
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload image: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No image selected')),
+      );
+    }
+  }
 
   // Extracting the selection condition
 
   bool get allSelected => isSelected.every((selected) => selected);
-
-  void _handlePunchOut() {
-    if (allSelected && _isPunchPressed) {
-      setState(() {
-        _isPunchOutPressed = true;
-        _isPunchOutMessage =
-            "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
-        Future.delayed(Duration(seconds: 3), () {
-          Navigator.push(
-            context,
-            PageTransition(
-              child: blankNewPage(),
-              type: PageTransitionType.fade,
-            ),
-          );
-        });
-      });
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          if (!_isPunchPressed) {
-            return ErrorPage();
-          } else {
-            return AlertPage();
-          }
-        },
-      );
-    }
-  }
 
   @override
   void initState() {
@@ -97,6 +139,8 @@ class _NewoState extends State<Newo> {
 
   @override
   Widget build(BuildContext context) {
+    final visiter_name = taskData?['name'];
+
     final w = MediaQuery.of(context).size.width;
     List getSymptomsForItemCode(String itemCode) {
       return symptoms.where((item) => item['item_code'] == itemCode).toList();
@@ -107,6 +151,48 @@ class _NewoState extends State<Newo> {
     }
 
     String? lastDisplayedProductCode;
+    void _handlePunchOut() {
+      if (allSelected && _isPunchPressed) {
+        setState(() {
+          _isPunchOutPressed = true;
+          _isPunchOutMessage =
+              "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
+          Future.delayed(Duration(seconds: 3), () async {
+            final featureView =
+                Provider.of<FeatureView>(context, listen: false);
+            await featureView.punchOutRepo(visiter_name); // API call
+            print(visiter_name);
+
+            // Handle UI feedback if needed after the punch-in is complete (e.g., show a message)
+            if (featureView.message != null) {
+              // Optionally show a success or error message from the API response
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(featureView.message!),
+              ));
+            }
+
+            Navigator.push(
+              context,
+              PageTransition(
+                child: blankNewPage(),
+                type: PageTransitionType.fade,
+              ),
+            );
+          });
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            if (!_isPunchPressed) {
+              return ErrorPage();
+            } else {
+              return AlertPage();
+            }
+          },
+        );
+      }
+    }
 
     return Scaffold(
       appBar: CustomDashApp(title: 'Task Details'),
@@ -181,10 +267,9 @@ class _NewoState extends State<Newo> {
                           Provider.of<FeatureView>(context, listen: false);
 
                       // Example name, replace with actual data
-                      String userName =
-                          "MAT-MVS-2024-00002"; // Use the appropriate value for the user
 
-                      await featureView.punchInRepo(userName); // API call
+                      await featureView.punchInRepo(visiter_name); // API call
+                      print(visiter_name);
 
                       // Handle UI feedback if needed after the punch-in is complete (e.g., show a message)
                       if (featureView.message != null) {
@@ -452,40 +537,95 @@ class _NewoState extends State<Newo> {
               ),
 
               // attachment card
-              const Card(
+              Card(
                 color: Colors.white,
                 elevation: 3,
                 child: Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Attachment for the Task Completion',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 12,
                       ),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .start, // Aligns children to the start
                         children: [
-                          Icon(
-                            Icons.add_circle_rounded,
-                            color: Pallete.iconAddColor,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Add Attachment',
-                            style: TextStyle(
+                          // First icon: To trigger the camera for taking a picture
+                          InkWell(
+                            onTap: () async {
+                              await _takePicture(); // Trigger the camera when the icon is tapped
+                            },
+                            child: const Icon(
+                              Icons.add_circle_rounded,
                               color: Pallete.iconAddColor,
                             ),
                           ),
+                          const SizedBox(
+                              width:
+                                  10), // Adds space between the icons (optional)
+
+                          // Text that says "Upload Pic"
+                          const Text(
+                            "Add attachment",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+
+                          const SizedBox(
+                              width:
+                                  10), // Adds space between the text and the image (optional)
+
+                          if (_imageFile != null)
+                            Container(
+                              width: 100, // Container width for the image
+                              height:
+                                  200.0, // Fixed height for the image container
+                              padding:
+                                  const EdgeInsets.all(8.0), // Optional padding
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Rounded corners
+                                border: Border.all(
+                                    color: Colors
+                                        .grey), // Border around the container
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                    10), // Clip image with rounded corners
+                                child: Image.file(
+                                  _imageFile!, // Ensure _imageFile is not null before passing
+                                  fit: BoxFit
+                                      .cover, // Makes the image cover the container area
+                                ),
+                              ),
+                            ),
+
+                          // Add another icon at the right side of the Row
+                          const Spacer(), // This makes the second icon move to the right end of the Row
+                          IconButton(
+                            icon: const Icon(
+                              Icons
+                                  .upload_file, // Example icon, change it as needed
+                              color: Pallete.iconAddColor, // Icon color
+                            ),
+                            onPressed: () {
+                              _uploadImage(context);
+                              // add post uplaod api here
+                            },
+                          ),
                         ],
-                      ),
+                      )
                     ],
                   ),
                 ),

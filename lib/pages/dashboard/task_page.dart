@@ -73,7 +73,7 @@ class _TasksPageState extends State<TasksPage> {
 
   Future<void> fetchTaskData() async {
     final url = Uri.parse(
-        'https://54e1-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
+        'https://124a-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
 
     try {
       final response = await http.get(url, headers: {
@@ -108,59 +108,68 @@ class _TasksPageState extends State<TasksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CupertinoSlidingSegmentedControl<int>(
-              thumbColor: segmentColors[selectedSegment] ?? Colors.blue,
-              backgroundColor: Colors.grey.shade300,
-              groupValue: selectedSegment,
-              children: {
-                0: Text(
-                  "All",
-                  style: TextStyle(
-                      color:
-                          selectedSegment == 0 ? Colors.white : Colors.black),
-                ),
-                1: Text(
-                  "Incomplete",
-                  style: TextStyle(
-                      color:
-                          selectedSegment == 1 ? Colors.white : Colors.black),
-                ),
-                2: Text(
-                  "Pending",
-                  style: TextStyle(
-                      color:
-                          selectedSegment == 2 ? Colors.white : Colors.black),
-                ),
-                3: Text(
-                  "Completed",
-                  style: TextStyle(
-                      color:
-                          selectedSegment == 3 ? Colors.white : Colors.black),
-                ),
-              },
-              onValueChanged: _onSegmentChanged,
-            ),
-          ),
-          Expanded(
-            child: isLoading
-                ? Center(
-                    child: LoadingAnimationWidget.waveDots(
-                      color: Pallete.mainFontColor,
-                      size: 70,
+        backgroundColor: Colors.white,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            // Call a function to re-fetch data here
+            await fetchTaskData(); // You would define this function to reload your data
+          },
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoSlidingSegmentedControl<int>(
+                  thumbColor: segmentColors[selectedSegment] ?? Colors.blue,
+                  backgroundColor: Colors.grey.shade300,
+                  groupValue: selectedSegment,
+                  children: {
+                    0: Text(
+                      "All",
+                      style: TextStyle(
+                          color: selectedSegment == 0
+                              ? Colors.white
+                              : Colors.black),
                     ),
-                  )
-                : filteredTasks.isNotEmpty
-                    ? _buildTasks(filteredTasks)
-                    : Center(child: Text('No tasks available')),
+                    1: Text(
+                      "Incomplete",
+                      style: TextStyle(
+                          color: selectedSegment == 1
+                              ? Colors.white
+                              : Colors.black),
+                    ),
+                    2: Text(
+                      "Pending",
+                      style: TextStyle(
+                          color: selectedSegment == 2
+                              ? Colors.white
+                              : Colors.black),
+                    ),
+                    3: Text(
+                      "Completed",
+                      style: TextStyle(
+                          color: selectedSegment == 3
+                              ? Colors.white
+                              : Colors.black),
+                    ),
+                  },
+                  onValueChanged: _onSegmentChanged,
+                ),
+              ),
+              Expanded(
+                child: isLoading
+                    ? Center(
+                        child: LoadingAnimationWidget.waveDots(
+                          color: Pallete.mainFontColor,
+                          size: 70,
+                        ),
+                      )
+                    : filteredTasks.isNotEmpty
+                        ? _buildTasks(filteredTasks)
+                        : Center(child: Text('No tasks available')),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildTasks(List<dynamic> tasks) {
