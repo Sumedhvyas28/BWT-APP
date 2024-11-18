@@ -114,13 +114,8 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, dynamic>> punchInOut(String name) async {
-    // Construct the request data dynamically using the provided `name`
-    final data = {
-      "maintenance_visit": name, // Using the dynamic name parameter here
-      "punch_in": true, // As per your request body
-    };
-
+  Future<Map<String, dynamic>> punchInOut(
+      Map<String, dynamic> requestData) async {
     final headers = {
       'Authorization': "${GlobalData().token}",
       "Content-Type": "application/json",
@@ -128,11 +123,11 @@ class AuthRepository {
 
     try {
       print(
-          "Request data: ${jsonEncode(data)}"); // Debugging output to confirm request payload
+          "Request data: ${jsonEncode(requestData)}"); // Debugging output to confirm request payload
 
       final response = await _apiServices.getPostApiWithHeaderResponse(
         AppUrl.punchInUrl, // Ensure you have the correct API URL
-        jsonEncode(data), // Send JSON-encoded string
+        jsonEncode(requestData), // Send JSON-encoded string
         headers,
       );
 
@@ -177,9 +172,8 @@ class AuthRepository {
   Future<Map<String, dynamic>> postLocation(String data) async {
     try {
       final response = await _apiServices.getPostApiResponse(
-        AppUrl.fetchLocation, // Ensure this is your correct API endpoint
-        data, // Sending the JSON-encoded string
-      );
+          AppUrl.fetchLocation, // Ensure this is your correct API endpoint
+          data);
       return response;
     } catch (e) {
       print("Error in posting location data: $e");
@@ -227,6 +221,7 @@ class AuthRepository {
       if (response.statusCode == 200) {
         print("Image and data uploaded successfully");
         final responseData = await http.Response.fromStream(response);
+        print(responseData.body);
         return jsonDecode(responseData.body); // Return the response body
       } else {
         print('Failed to upload image. Status Code: ${response.statusCode}');

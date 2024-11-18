@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/constants/api_constant/routes/api_routes.dart';
+import 'package:flutter_application_1/models/user_location.dart';
 import 'package:flutter_application_1/repository/auth_repo.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
 import 'package:http_parser/http_parser.dart';
@@ -130,84 +132,76 @@ class FeatureView with ChangeNotifier {
     }
   }
 
-  Future<void> punchInRepo(String name) async {
-    print("API called with name: $name");
-    _isLoading = true;
+  Future<void> punchInRepo(String name, {bool punchIn = true}) async {
     notifyListeners();
 
-    final Map<String, dynamic> data = {
-      'name': name,
+    final Map<String, dynamic> requestData = {
+      "maintenance_visit": name,
+      "punch_in": punchIn,
+    };
+    final headers = {
+      'Authorization': "${GlobalData().token}",
+      "Content-Type": "application/json",
     };
 
     try {
-      final response = await _myRepo
-          .punchInOut(name); // Call the punchIn method from the repository
-      print("Response from punchIn API: $response");
+      final String jsonBody = jsonEncode(requestData);
 
-      if (response != null && response['message'] != null) {
-        _message = response['message']
-            ['message']; // Assign the message from the response
-      } else {
-        _message = 'Request failed or invalid response';
-      }
+      final http.Response response = await http
+          .post(Uri.parse(AppUrl.punchInUrl), body: jsonBody, headers: headers);
+
+      // Parse the response body
+      final jsonResponse = jsonDecode(response.body);
+      print("Response from API: $jsonResponse");
+
+      return jsonResponse;
     } catch (e) {
-      _message = 'An error occurred: $e';
-      print('Error in punchIn: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      print("Error in API call: $e");
+      rethrow;
     }
   }
 
-  Future<void> punchOutRepo(String name) async {
-    print("API called with name: $name");
-    _isLoading = true;
+  Future<void> punchOutRepo(String name, {bool punchIn = true}) async {
     notifyListeners();
 
-    final Map<String, dynamic> data = {
-      'name': name,
+    final Map<String, dynamic> requestData = {
+      "maintenance_visit": name,
+      "punch_out": punchIn,
+    };
+    final headers = {
+      'Authorization': "${GlobalData().token}",
+      "Content-Type": "application/json",
     };
 
     try {
-      final response = await _myRepo
-          .punchInOut(name); // Call the punchIn method from the repository
-      print("Response from punchIn API: $response");
+      final String jsonBody = jsonEncode(requestData);
 
-      if (response != null && response['message'] != null) {
-        _message = response['message']
-            ['message']; // Assign the message from the response
-      } else {
-        _message = 'Request failed or invalid response';
-      }
+      final http.Response response = await http
+          .post(Uri.parse(AppUrl.punchInUrl), body: jsonBody, headers: headers);
+
+      // Parse the response body
+      final jsonResponse = jsonDecode(response.body);
+      print("Response from API: $jsonResponse");
+
+      return jsonResponse;
     } catch (e) {
-      _message = 'An error occurred: $e';
-      print('Error in punchIn: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      print("Error in API call: $e");
+      rethrow;
     }
   }
 
-  static Future<void> postLocationDistance(
+  static Future<UserLocation> postLocationDistance(
       double lat1, double lon1, double lat2, double lon2) async {
-    try {
-      final data = {
-        'lat1': lat1,
-        'lon1': lon1,
-        'lat2': lat2,
-        'lon2': lon2,
-      };
-
-      final jsonData = jsonEncode(data);
-      final response = await _myRepo.postLocation(jsonData);
-
-      if (response['message']['status'] == 'success') {
-        print('Distance: ${response['message']['distance']}');
-      } else {
-        print('Failed to fetch distance');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
+    UserLocation? UserLocationData;
+    http.Response response =
+        await http.post(Uri.parse(AppUrl.fetchLocation), body: {
+      'lat1': lat1,
+      'lon1': lon1,
+      'lat2': lat2,
+      'lon2': lon2,
+    });
+    final jsonData = json.decode(response.body);
+    UserLocationData = UserLocation.fromJson(jsonData);
+    return UserLocationData;
   }
 }

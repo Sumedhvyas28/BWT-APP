@@ -29,8 +29,8 @@ class TaskPunchState extends State<TaskPunch> {
   final double _containerWidth = 350;
   bool _showLocations = false;
   bool _showDistance = false;
-  late String lat;
-  late String long;
+  late double lat;
+  late double long;
   String locationMessage = 'current location';
 
   @override
@@ -39,7 +39,7 @@ class TaskPunchState extends State<TaskPunch> {
       setState(() {
         taskData = widget.task;
         isLoading = false;
-
+        _newTask();
         _buttonColor = Pallete.activeButtonColor;
         _fillWidth = _containerWidth * 0.7;
         _showLocations = true;
@@ -90,27 +90,60 @@ class TaskPunchState extends State<TaskPunch> {
 
   void _newTask() async {
     try {
-      // Assume `lat1` and `lon1` are already known
-      double lat1 = 23.0225; // Replace with your actual value
-      double lon1 = 72.5714; // Replace with your actual value
+      // Check if taskData is available
+      if (taskData == null) {
+        print("Task data is null.");
+        return;
+      }
+
+      // Safe access to 'geolocation'
+      final geolocation = taskData?['geolocation'];
+      if (geolocation == null) {
+        print("Geolocation data is missing.");
+        return;
+      }
+
+      final features = geolocation['features'] as List<dynamic>?;
+      if (features == null || features.isEmpty) {
+        print("Features data is missing.");
+        return;
+      }
+
+      final geometry = features[0]['geometry'] as Map<String, dynamic>?;
+      if (geometry == null || geometry['coordinates'] == null) {
+        print("Geometry data or coordinates are missing.");
+        return;
+      }
+
+      // Extract coordinates with safe access
+      final coordinates = geometry['coordinates'] as List<dynamic>?;
+      if (coordinates == null || coordinates.length < 2) {
+        print("Invalid coordinates.");
+        return;
+      }
+// Extract coordinates as double
+      final lat1 = coordinates[1] as double;
+      final lon1 = coordinates[0] as double;
+
+      print('Coordinates fetched: lat1: $lat1, lon1: $lon1');
 
       // Fetch the current location for lat2 and lon2
       Map<String, double> currentLocation = await _getCurrentLocation();
       double lat2 = currentLocation['latitude']!;
       double lon2 = currentLocation['longitude']!;
 
-      // Call the postLocationDistance API
-      print('lolu');
+      print('Current Location: lat2: $lat2, lon2: $lon2');
 
+      // Call the postLocationDistance API
       await FeatureView.postLocationDistance(lat1, lon1, lat2, lon2);
 
-      // Use the response message (_distanceMessage) to show a dialog or update the UI
+      // Show distance result (update UI with this)
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Distance Calculation"),
-            content: Text('new'),
+            content: Text('New task completed.'),
             actions: [
               TextButton(
                 child: const Text("OK"),
@@ -167,14 +200,50 @@ class TaskPunchState extends State<TaskPunch> {
     );
   }
 
+  void _performAction() {
+    // Your action here (e.g., make an API call, navigate to a new screen, etc.)
+    print('Action performed!');
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(taskData);
+    if (taskData == null) {
+      print("Task data is not available yet.");
+      return const CircularProgressIndicator();
+    }
+    print(taskData ?? "");
+    final geolocation = taskData?['geolocation'];
+    if (geolocation == null) {
+      print("Geolocation data is not available.");
+      return const Text("Geolocation data missing");
+    }
+
+    final features = geolocation['features'] as List<dynamic>?;
+    if (features == null || features.isEmpty) {
+      print("Features data is missing.");
+      return const Text("Features data missing");
+    }
+
+    final geometry = features[0]['geometry'] as Map<String, dynamic>?;
+    if (geometry == null || geometry['coordinates'] == null) {
+      print("Geometry data is missing.");
+      return const Text("Geometry data missing");
+    }
+
+    // Extract coordinates
+    final coordinates = geometry['coordinates'] as List<dynamic>;
+    final lon1 = coordinates[0];
+    final lat1 = coordinates[1];
+
     _getCurrentLocation().then((value) {
-      lat = '${value['latitude']}'; // Use the key to get latitude
-      long = '${value['longitude']}'; // Use the key to get longitude
-      print(lat);
-      print(long);
+      lat = value['latitude']!; // Use the key to get latitude
+      long = value['longitude']!; // Use the key to get longitude
     });
+
+    // print('Latitude 1: $lat1, Longitude 1: $lon1');
+    // print('Latitude 2: $lat, Longitude 2: $long');
+
     if (widget.task == null) {
       throw Exception('failed to load data');
     }
@@ -277,15 +346,15 @@ class TaskPunchState extends State<TaskPunch> {
                           borderRadius: BorderRadius.circular(12),
                         )),
                     onPressed: () {
-                      _newTask;
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                            child: Newo(
-                              task: taskData,
-                            ),
-                            type: PageTransitionType.fade,
-                          ));
+                      _newTask();
+                      // Navigator.push(
+                      //     context,
+                      //     PageTransition(
+                      //       child: Newo(
+                      //         task: taskData,
+                      //       ),
+                      //       type: PageTransitionType.fade,
+                      //     ));
                     },
                     child: Text(
                       'Reached to location',
