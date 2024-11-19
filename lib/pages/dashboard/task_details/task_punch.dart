@@ -346,15 +346,15 @@ class TaskPunchState extends State<TaskPunch> {
                           borderRadius: BorderRadius.circular(12),
                         )),
                     onPressed: () {
-                      _newTask();
-                      // Navigator.push(
-                      //     context,
-                      //     PageTransition(
-                      //       child: Newo(
-                      //         task: taskData,
-                      //       ),
-                      //       type: PageTransitionType.fade,
-                      //     ));
+                      // _newTask();
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                            child: Newo(
+                              task: taskData,
+                            ),
+                            type: PageTransitionType.fade,
+                          ));
                     },
                     child: Text(
                       'Reached to location',
