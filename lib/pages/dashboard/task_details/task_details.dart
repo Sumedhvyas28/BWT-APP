@@ -4,6 +4,7 @@ import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/blank_Delivery.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
+import 'package:flutter_application_1/pages/dashboard/task_details/new_map.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/task_punch.dart';
 import 'package:flutter_application_1/view_model/auth_view_model.dart';
 import 'package:flutter_application_1/view_model/feature_view.dart';
@@ -184,7 +185,7 @@ class _TaskDetailsState extends State<TaskDetails> {
           Navigator.push(
             context,
             PageTransition(
-              child: TaskPunch(task: task),
+              child: NewMapPage(task: task),
               type: PageTransitionType.fade,
             ),
           );
