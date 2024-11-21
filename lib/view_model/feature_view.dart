@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/api_constant/routes/api_routes.dart';
-import 'package:flutter_application_1/models/user_location.dart';
+import 'package:flutter_application_1/models/post_location.dart';
 import 'package:flutter_application_1/repository/auth_repo.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
 import 'package:http_parser/http_parser.dart';
@@ -190,18 +190,39 @@ class FeatureView with ChangeNotifier {
     }
   }
 
-  static Future<UserLocation> postLocationDistance(
+  // static Future<UserLocation> postLocationDistance(
+  //     double lat1, double lon1, double lat2, double lon2) async {
+  //   UserLocation? UserLocationData;
+  //   http.Response response =
+  //       await http.post(Uri.parse(AppUrl.fetchLocation), body: {
+  //     'lat1': lat1,
+  //     'lon1': lon1,
+  //     'lat2': lat2,
+  //     'lon2': lon2,
+  //   });
+  //   final jsonData = json.decode(response.body);
+  //   UserLocationData = UserLocation.fromJson(jsonData);
+  //   return UserLocationData;
+  // }
+  postLocation? postLocationData;
+
+  Future<void> postLocationDataApi(
       double lat1, double lon1, double lat2, double lon2) async {
-    UserLocation? UserLocationData;
-    http.Response response =
-        await http.post(Uri.parse(AppUrl.fetchLocation), body: {
-      'lat1': lat1,
-      'lon1': lon1,
-      'lat2': lat2,
-      'lon2': lon2,
-    });
-    final jsonData = json.decode(response.body);
-    UserLocationData = UserLocation.fromJson(jsonData);
-    return UserLocationData;
+    try {
+      // Define the body to pass to the API.
+      final requestBody = {
+        "lat1": lat1.toString(),
+        "lon1": lon1.toString(),
+        "lat2": lat2.toString(),
+        "lon2": lon2.toString(),
+      };
+
+      // Call the repository method and assign the result to postLocationData.
+      postLocationData = await _myRepo.postLocationData(requestBody);
+      print('API call succeeded');
+      notifyListeners();
+    } catch (e) {
+      print('Error posting message details: $e');
+    }
   }
 }

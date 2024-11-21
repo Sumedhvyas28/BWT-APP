@@ -5,6 +5,7 @@ import 'package:flutter_application_1/constants/api_constant/routes/api_routes.d
 import 'package:flutter_application_1/data/network/BaseApiService.dart';
 import 'package:flutter_application_1/data/network/NetworkApiService.dart';
 import 'package:flutter_application_1/models/going_for_visit.dart';
+import 'package:flutter_application_1/models/post_location.dart';
 import 'package:flutter_application_1/models/user_data.dart';
 import 'package:flutter_application_1/view_model/get_main.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
@@ -169,18 +170,6 @@ class AuthRepository {
     }
   }
 
-  Future<Map<String, dynamic>> postLocation(String data) async {
-    try {
-      final response = await _apiServices.getPostApiResponse(
-          AppUrl.fetchLocation, // Ensure this is your correct API endpoint
-          data);
-      return response;
-    } catch (e) {
-      print("Error in posting location data: $e");
-      rethrow;
-    }
-  }
-
   // add iamge save api here
 
   Future<Map<String, dynamic>> postImageWithMaintenanceVisitRepo(
@@ -230,6 +219,29 @@ class AuthRepository {
     } catch (e) {
       print('Error uploading image: $e');
       throw e;
+    }
+  }
+
+  Future<postLocation> postLocationData(
+      Map<String, dynamic> requestBody) async {
+    try {
+      final body = jsonEncode(requestBody);
+
+      final response = await _apiServices.getPostApiResponse(
+        AppUrl.fetchLocation, // Replace with your endpoint URL.
+        body,
+      );
+
+      if (response != null) {
+        print(response['success']);
+        print(response['message']);
+
+        return postLocation.fromJson(response); // Adjusted model instantiation.
+      } else {
+        throw Exception('Error: No response from the server');
+      }
+    } catch (e) {
+      throw Exception('Error posting message details: $e');
     }
   }
 }

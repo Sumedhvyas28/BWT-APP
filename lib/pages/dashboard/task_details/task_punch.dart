@@ -135,7 +135,7 @@ class TaskPunchState extends State<TaskPunch> {
       print('Current Location: lat2: $lat2, lon2: $lon2');
 
       // Call the postLocationDistance API
-      await FeatureView.postLocationDistance(lat1, lon1, lat2, lon2);
+      // await FeatureView.postLocationDistance(lat1, lon1, lat2, lon2);
 
       // Show distance result (update UI with this)
       showDialog(

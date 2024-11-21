@@ -1,16 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
 import 'package:flutter_application_1/view_model/auth_view_model.dart';
+import 'package:geolocator/geolocator.dart'; // Import Geolocator
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-// check box
-// height check
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -20,7 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late Size mediaSize;
-  bool _isPasswordHidden = true; // for pass
+  bool _isPasswordHidden = true; // for password visibility toggle
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -51,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-// login container for bottom
+  // login container for bottom
   Widget _buildBottom(Size mediaSize) {
     return SizedBox(
       width: mediaSize.width,
@@ -119,16 +117,29 @@ class _LoginPageState extends State<LoginPage> {
     final authViewModel = context.read<AuthViewModel>();
 
     return ElevatedButton(
-      onPressed: () {
-        Map data = {
-          "email": emailController.text.toString(),
-          "password": passwordController.text.toString(),
-        };
+      onPressed: () async {
+        // First, get the current location
+        try {
+          Map<String, double> location = await _getCurrentLocation();
+          print(
+              'Location: Latitude: ${location['latitude']}, Longitude: ${location['longitude']}');
 
-        // Get the instance of AuthViewModel from the provider and call loginRepo
+          // Continue with login after getting location
+          Map data = {
+            "email": emailController.text.toString(),
+            "password": passwordController.text.toString(),
+          };
 
-        // Call loginRepo through the instance of AuthViewModel
-        authViewModel.login(data, context);
+          // Get the instance of AuthViewModel from the provider and call loginRepo
+          authViewModel.login(data, context);
+          final lat2 = location['latitude']!;
+          final lon2 = location['longitude']!;
+          print(lat2);
+          print(lon2);
+        } catch (e) {
+          print('Error: $e');
+          // Handle error (e.g., show an alert)
+        }
       },
       style: ElevatedButton.styleFrom(
         shape: const StadiumBorder(),
@@ -146,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-// forgot password
+  // forgot password
   Widget _buildForgotPassword() {
     return Center(
       child: TextButton(
@@ -159,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-// terms and services button
+  // terms and services button
   Widget _buildTermsButton() {
     return Center(
       child: TextButton(
@@ -172,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-// terms and condition text
+  // terms and condition text
   Widget _buildTermsAndCondition() {
     return const Center(
       child: Text.rich(
@@ -185,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             TextSpan(
-              text: 'Terms & Conditions, by login in',
+              text: 'Terms & Conditions, by logging in',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -195,14 +206,13 @@ class _LoginPageState extends State<LoginPage> {
         style: TextStyle(
           color: Colors.black,
           fontSize: 18,
-          // height: 1.5,
         ),
         textAlign: TextAlign.center,
       ),
     );
   }
 
-// skeleton for input field
+  // skeleton for input field
   Widget _buildGreyText(String text) {
     return TextField(
       controller: emailController,
@@ -248,6 +258,52 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
       ),
+    );
+  }
+
+  // Location function to get current coordinates
+  Future<Map<String, double>> _getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showLocationServiceDialog();
+      throw Exception('Location services are disabled');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permission denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied');
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    return {'latitude': position.latitude, 'longitude': position.longitude};
+  }
+
+  // Show dialog if location service is disabled
+  void _showLocationServiceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Location Services Disabled'),
+          content: Text('Please enable location services to proceed.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
