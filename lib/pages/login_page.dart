@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
 import 'package:flutter_application_1/view_model/auth_view_model.dart';
+import 'package:flutter_application_1/view_model/feature_view.dart';
 import 'package:geolocator/geolocator.dart'; // Import Geolocator
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
@@ -19,9 +21,38 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late Size mediaSize;
   bool _isPasswordHidden = true; // for password visibility toggle
+  Timer? _locationUpdateTimer;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _locationUpdateTimer?.cancel();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  void _startLocationUpdates(double initialLat, double initialLon) {
+    // Immediately post the location after login
+    context
+        .read<FeatureView>()
+        .submitLocation(initialLat.toString(), initialLon.toString());
+
+    // Set up periodic updates
+    _locationUpdateTimer = Timer.periodic(Duration(minutes: 2), (_) async {
+      try {
+        Map<String, double> location = await _getCurrentLocation();
+        context.read<FeatureView>().submitLocation(
+            location['latitude'].toString(), location['longitude'].toString());
+        print(
+            'Location sent: ${location['latitude']}, ${location['longitude']}');
+      } catch (e) {
+        print('Error updating location: $e');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,33 +143,27 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // login button
   Widget _buildLoginButton() {
     final authViewModel = context.read<AuthViewModel>();
 
     return ElevatedButton(
       onPressed: () async {
-        // First, get the current location
         try {
+          // Get the current location
           Map<String, double> location = await _getCurrentLocation();
-          print(
-              'Location: Latitude: ${location['latitude']}, Longitude: ${location['longitude']}');
 
-          // Continue with login after getting location
+          // Login process
           Map data = {
-            "email": emailController.text.toString(),
-            "password": passwordController.text.toString(),
+            "email": emailController.text.trim(),
+            "password": passwordController.text.trim(),
           };
 
-          // Get the instance of AuthViewModel from the provider and call loginRepo
           authViewModel.login(data, context);
-          final lat2 = location['latitude']!;
-          final lon2 = location['longitude']!;
-          print(lat2);
-          print(lon2);
+
+          // Start periodic location updates
+          _startLocationUpdates(location['latitude']!, location['longitude']!);
         } catch (e) {
-          print('Error: $e');
-          // Handle error (e.g., show an alert)
+          print('Error during login: $e');
         }
       },
       style: ElevatedButton.styleFrom(

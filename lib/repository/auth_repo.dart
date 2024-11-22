@@ -244,4 +244,25 @@ class AuthRepository {
       throw Exception('Error posting message details: $e');
     }
   }
+
+  Future<void> postLocationFive(String lat, String lon) async {
+    final url =
+        "https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.live_location";
+
+    final headers = {
+      'Authorization': "${GlobalData().token}",
+      "Content-Type":
+          "multipart/form-data", // Content-Type is form-data since we're sending a file
+    };
+
+    final body = json.encode({"lat": "22.12222", "lon": "123.12222"});
+
+    try {
+      final response =
+          await _apiServices.getPostApiWithHeaderResponse(url, body, headers);
+      return response;
+    } catch (e) {
+      throw Exception("failed to send location data:$e");
+    }
+  }
 }

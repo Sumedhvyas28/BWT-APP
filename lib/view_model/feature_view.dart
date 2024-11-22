@@ -14,6 +14,7 @@ class FeatureView with ChangeNotifier {
   static final AuthRepository _myRepo = AuthRepository();
   String? _message;
   bool _isLoading = false;
+  String? _responseMessage;
 
   String? get message => _message;
   bool get isLoading => _isLoading;
@@ -223,6 +224,15 @@ class FeatureView with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error posting message details: $e');
+    }
+  }
+
+  Future<void> submitLocation(String lat, String lon) async {
+    try {
+      await _myRepo.postLocationFive(lat, lon);
+      print("Location submitted successfully");
+    } catch (e) {
+      print("Error submitting location: $e");
     }
   }
 }
