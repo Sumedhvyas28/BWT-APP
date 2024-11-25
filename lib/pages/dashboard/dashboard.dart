@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/dashboard/new_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/new_task.dart';
+import 'package:flutter_application_1/view_model/auth_view_model.dart';
+import 'package:flutter_application_1/view_model/feature_view.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_application_1/constants/custom_appbar.dart';
 import 'package:flutter_application_1/constants/drawer.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/client_page.dart';
 import 'package:flutter_application_1/pages/dashboard/task_page.dart';
+import 'package:provider/provider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -22,6 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+
     Future.delayed(
         const Duration(
           seconds: 1,

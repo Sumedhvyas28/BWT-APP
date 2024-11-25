@@ -163,6 +163,7 @@ class AuthRepository {
       );
 
       print("Response from API: $response");
+      print("Response from API: tqnqttopq p o p op o p i p o");
       return response;
     } catch (e) {
       print("Error in API call: $e");
@@ -249,20 +250,87 @@ class AuthRepository {
     final url =
         "https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.live_location";
 
+    // Ensure the token is available
+    final token = GlobalData().token;
+    if (token == null || token.isEmpty) {
+      throw Exception("Authorization token is missing");
+    }
+
     final headers = {
       'Authorization': "${GlobalData().token}",
-      "Content-Type":
-          "multipart/form-data", // Content-Type is form-data since we're sending a file
+      "Content-Type": "application/json",
     };
 
-    final body = json.encode({"lat": "22.12222", "lon": "123.12222"});
+    // print("Headers: $headers");
+
+    final body = json.encode({"lat": lat, "lon": lon});
 
     try {
+      // Use the API service to send the request with headers
       final response =
           await _apiServices.getPostApiWithHeaderResponse(url, body, headers);
+      // print(response);
       return response;
     } catch (e) {
-      throw Exception("failed to send location data:$e");
+      throw Exception("Failed to send location data: $e");
+    }
+  }
+
+  Future<void> postTaskReschedule({
+    required String maintenanceVisit,
+    required String type,
+    required String reason,
+    required String date,
+    required String hours,
+  }) async {
+    final url = AppUrl.rescheduleUrl;
+
+    // Ensure the token is available
+    final token = GlobalData().token;
+    if (token == null || token.isEmpty) {
+      throw Exception("Authorization token is missing");
+    }
+
+    final headers = {
+      'Authorization': "$token",
+      "Content-Type": "application/json",
+    };
+
+    final body = json.encode({
+      "maintenance_visit": maintenanceVisit,
+      "type": type,
+      "reason": reason,
+      "date": date,
+      "hours": hours,
+    });
+
+    try {
+      // Call the first API to reschedule
+      final response = await http.post(
+        Uri.parse(AppUrl.rescheduleUrl),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        print("Task rescheduled successfully!");
+
+        // If reschedule is successful, call the second API to punch out
+        final punchOutResponse =
+            await punchOut(maintenanceVisit); // Call punchOut method
+
+        if (punchOutResponse['status'] == 'success') {
+          print("Punch-out successful!");
+        } else {
+          throw Exception(
+              "Failed to punch out: ${punchOutResponse['message']}");
+        }
+      } else {
+        throw Exception(
+            "Failed to reschedule task: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("Error occurred during task reschedule or punch out: $e");
     }
   }
 }

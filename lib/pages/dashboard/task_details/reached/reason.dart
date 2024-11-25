@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/custom_dashapp.dart';
 import 'package:flutter_application_1/constants/pallete.dart';
-import 'package:flutter_application_1/pages/dashboard/dashboard.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/blank.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_application_1/view_model/feature_view.dart';
+import 'package:provider/provider.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ReasonPage extends StatefulWidget {
-  const ReasonPage({super.key});
+  final String name; // Add a name parameter
+
+  const ReasonPage({super.key, required this.name});
 
   @override
   State<ReasonPage> createState() => _ReasonPageState();
 }
 
 class _ReasonPageState extends State<ReasonPage> {
-  // Dropdown value state
   String? _selectedReason;
-
-  // TextEditingController for the detailed reason and working hours
   final TextEditingController _detailedReasonController =
       TextEditingController();
   final TextEditingController _workingHoursController = TextEditingController();
-
-  // List of options for the dropdown
   final List<String> _reasons = [
     'Personal reasons',
     'Client request',
@@ -30,20 +27,22 @@ class _ReasonPageState extends State<ReasonPage> {
     'Weather conditions',
     'others'
   ];
-
-  // DateTime state for the rescheduled date
   DateTime? _selectedDate;
 
-  // State for button pressed
   bool _isButtonPressed = false;
-  String _buttonText = 'SUBMIT FOR APPROVAL'; // Default button text
-  Color _buttonColor = Pallete.activeButtonColor; // Default button color
-  String _isPunchOutMessage = ''; // Message to display when button is pressed
+  String _buttonText = 'SUBMIT FOR APPROVAL';
+  Color _buttonColor = Pallete.activeButtonColor;
+  String _isPunchOutMessage = '';
+  late String mainName;
 
-  // Function to handle button press
-// Function to handle button press
-  void _onButtonPressed() {
-    // Validate all fields before proceeding
+  @override
+  void initState() {
+    mainName = widget.name;
+
+    super.initState();
+  }
+
+  void _onButtonPressed() async {
     if (_selectedReason == null ||
         _detailedReasonController.text.isEmpty ||
         _selectedDate == null ||
@@ -53,11 +52,11 @@ class _ReasonPageState extends State<ReasonPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Validation Error'),
-            content: Text('Please fill all fields before submitting.'),
+            title: const Text('Validation Error'),
+            content: const Text('Please fill all fields before submitting.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -69,28 +68,44 @@ class _ReasonPageState extends State<ReasonPage> {
       return;
     }
 
-    setState(() {
-      _buttonColor = Pallete.disabledBtnColor; // Change button background color
-      _buttonText = 'RESCHEDULED'; // Change button text
-      _isButtonPressed = true; // Mark button as pressed
-      _isPunchOutMessage =
-          "Punched out at ${TimeOfDay.now().format(context)}"; // Update message
+    // Call the ViewModel's submitTaskReschedule method
+    final viewModel = Provider.of<FeatureView>(context, listen: false);
+    await viewModel.submitTaskReschedule(
+      maintenanceVisit: mainName,
+      type: _selectedReason!,
+      reason: _detailedReasonController.text,
+      date: _selectedDate!.toLocal().toString().split(' ')[0],
+      hours: _workingHoursController.text,
+    );
+    print(mainName);
+    print('Selected reason: $_selectedReason');
+    print('Detailed reason: ${_detailedReasonController.text}');
+    print('Date: $_selectedDate');
+    print('Hours: ${_workingHoursController.text}');
 
-      Future.delayed(Duration(seconds: 3), () {
-        Navigator.push(
-          context,
-          PageTransition(
-            child: blanktPage(),
-            type: PageTransitionType.fade,
-          ),
-        );
-      });
+    // Update UI based on result
+    setState(() {
+      _buttonColor = Pallete.disabledBtnColor;
+      _buttonText = 'RESCHEDULED';
+      _isButtonPressed = true;
+      _isPunchOutMessage = "Punched out at ${TimeOfDay.now().format(context)}";
+    });
+
+    // Navigate after a delay
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.push(
+        context,
+        PageTransition(
+          child: blanktPage(),
+          type: PageTransitionType.fade,
+        ),
+      );
     });
   }
 
   @override
   void dispose() {
-    _detailedReasonController.dispose(); // Dispose the controller
+    _detailedReasonController.dispose();
     _workingHoursController.dispose();
     super.dispose();
   }
@@ -111,20 +126,13 @@ class _ReasonPageState extends State<ReasonPage> {
               const Text(
                 'Reason Type',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start,
               ),
               const SizedBox(height: 10),
-
-              // DropdownButtonFormField for selecting the reason
               DropdownButtonFormField<String>(
                 value: _selectedReason,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(
-                      color: Colors.black,
-                      width: 2.0,
-                    ),
                   ),
                 ),
                 hint: const Text('Select Your Reason'),
@@ -140,42 +148,28 @@ class _ReasonPageState extends State<ReasonPage> {
                   });
                 },
               ),
-
               const SizedBox(height: 20),
-
-              // Add Your Reason (Detailed Reason)
               const Text(
                 'Add Your Detailed Reason',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start,
               ),
               const SizedBox(height: 10),
-
-              // TextField for detailed reason
               TextField(
                 controller: _detailedReasonController,
                 maxLines: 6,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(
-                      color: Colors.black,
-                      width: 2.0,
-                    ),
                   ),
                   hintText: 'Type your reason here...',
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Reschedule Date
               const Text(
                 'Proposed Reschedule Date',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start,
               ),
               const SizedBox(height: 10),
-
               GestureDetector(
                 onTap: () => _selectDate(context),
                 child: Container(
@@ -183,10 +177,7 @@ class _ReasonPageState extends State<ReasonPage> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 2.0,
-                    ),
+                    border: Border.all(color: Colors.black, width: 2.0),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -197,62 +188,43 @@ class _ReasonPageState extends State<ReasonPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Working hours field
               const Text(
                 'Additional Hours Needed',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start,
               ),
               const SizedBox(height: 10),
-
-              // TextField for working hours
               TextField(
                 controller: _workingHoursController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(
-                      color: Colors.black,
-                      width: 2.0,
-                    ),
                   ),
                   hintText: 'Enter working hours',
                 ),
               ),
-
-              SizedBox(height: 20),
-
-              Container(
-                padding: EdgeInsets.all(2),
-                child: Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _buttonColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _buttonColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onPressed:
-                        _onButtonPressed, // Call the button press function
-
-                    child: Text(
-                      _buttonText,
-                      style: TextStyle(fontSize: 25, color: Colors.white),
-                    ),
+                  ),
+                  onPressed: _onButtonPressed,
+                  child: Text(
+                    _buttonText,
+                    style: const TextStyle(fontSize: 25, color: Colors.white),
                   ),
                 ),
               ),
-
-              // Display the message below the button if pressed
               if (_isButtonPressed)
                 Center(
                   child: Text(
                     _isPunchOutMessage,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Pallete.redBtnColor,
@@ -266,13 +238,12 @@ class _ReasonPageState extends State<ReasonPage> {
     );
   }
 
-  // Function to pick date
   Future<void> _selectDate(BuildContext context) async {
     final DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: now,
-      firstDate: now, // Prevent selecting dates before today
+      firstDate: now,
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != _selectedDate) {

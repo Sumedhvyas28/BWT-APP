@@ -91,8 +91,8 @@ class _NewMapPageState extends State<NewMapPage> {
 
       // final lat1 = widget.task?['geolocation']['features'][0]['geometry']
       //     ['coordinates'][1];
-      final lat1 = 22.734695621922395;
-      final lon1 = 75.88862261038629;
+      final lat1 = 37.4219983;
+      final lon1 = -122.084;
       // final lon1 = widget.task?['geolocation']['features'][0]['geometry']
       //     ['coordinates'][0];
 

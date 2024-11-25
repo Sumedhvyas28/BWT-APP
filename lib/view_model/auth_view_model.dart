@@ -56,8 +56,9 @@ class AuthViewModel with ChangeNotifier {
   Future<void> login(dynamic data, BuildContext context) async {
     setLoading(true);
 
-    _myrepo.loginRepo(data).then((response) async {
-      print('Login Response: $response'); // For debugging response
+    try {
+      final response = await _myrepo.loginRepo(data);
+      print('Login Response: $response');
 
       if (response['message'] != null &&
           response['message']['status'] == 'success') {
@@ -65,7 +66,7 @@ class AuthViewModel with ChangeNotifier {
         final apiSecret =
             response['message']['user']['api_secret']?.toString() ?? '';
 
-        // Construct the authorization token (adjust format if needed)
+        // Construct the authorization token
         final authorizationToken = 'token $apiKey:$apiSecret';
 
         // Store user data with the authorization token
@@ -77,28 +78,36 @@ class AuthViewModel with ChangeNotifier {
           "fullName": response['message']['user']['full_name'],
         };
 
+        // Store user data in provider
         await Provider.of<UserSession>(context, listen: false)
             .storeUserData(userData);
 
         // Update headers for future requests
         header = {HttpHeaders.authorizationHeader: authorizationToken};
 
-        // Navigate to the main page
-        GoRouter.of(context).go('/home'); // Adjust route to your main page
+        // Navigate to home screen
+        if (context.mounted) {
+          GoRouter.of(context).go('/home');
+        }
 
-        // Show a success message
-        Utils.flushbarErrorMessage('User logged in successfully', context);
+        // Show success message
+        if (context.mounted) {
+          Utils.flushbarErrorMessage('User logged in successfully', context);
+        }
       } else {
-        // Display specific error from API or a general message
         final errorMsg = response['message']?['message'] ?? 'Login failed';
-        Utils.flushbarErrorMessage('Login failed: $errorMsg', context);
+        if (context.mounted) {
+          Utils.flushbarErrorMessage('Login failed: $errorMsg', context);
+        }
       }
-
+    } catch (e) {
       setLoading(false);
-    }).onError((error, stackTrace) {
+      if (context.mounted) {
+        Utils.flushbarErrorMessage('Wrong Credentials', context);
+      }
+      print('Error: $e');
+    } finally {
       setLoading(false);
-      Utils.flushbarErrorMessage('Wrong Credentials', context);
-      print('Error: $error');
-    });
+    }
   }
 }

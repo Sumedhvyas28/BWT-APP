@@ -25,4 +25,6 @@ class AppUrl {
       "https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.add_symptom_requests";
   static String updateTechnicianNotes =
       "https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.technician_notes";
+  static String rescheduleUrl =
+      "https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.add_reschedule_requests";
 }

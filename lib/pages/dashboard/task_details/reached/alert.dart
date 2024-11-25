@@ -3,13 +3,22 @@ import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/reached/reason.dart';
 
 class AlertPage extends StatefulWidget {
-  const AlertPage({super.key});
+  final String name; // Add a name parameter
+
+  const AlertPage({super.key, required this.name});
 
   @override
   State<AlertPage> createState() => _AlertPageState();
 }
 
 class _AlertPageState extends State<AlertPage> {
+  late String taskData;
+  @override
+  void initState() {
+    taskData = widget.name;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -28,8 +37,8 @@ class _AlertPageState extends State<AlertPage> {
                   onPressed: () {
                     Navigator.of(context).pop();
 
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ReasonPage()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ReasonPage(name: taskData)));
 
                     // showDialog(
                     //     context: context,

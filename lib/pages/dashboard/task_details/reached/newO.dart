@@ -46,24 +46,18 @@ class _NewoState extends State<Newo> {
 
   final TextEditingController noteController = TextEditingController();
 
-  // Method to pick and store the image
   Future<void> _takePicture() async {
-    // Pick image from the camera
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
 
     if (image != null) {
-      // Get the directory to store the image
       final directory = await getApplicationDocumentsDirectory();
-      final name = DateTime.now()
-          .millisecondsSinceEpoch
-          .toString(); // Generate a unique name for the image
+      final name = DateTime.now().millisecondsSinceEpoch.toString();
       final imagePath = '${directory.path}/$name.jpg';
 
-      // Copy the image to the local directory
       final File storedImage = await File(image.path).copy(imagePath);
 
       setState(() {
-        _imageFile = storedImage; // Store the image file
+        _imageFile = storedImage;
       });
 
       print("Image saved at: ${storedImage.path}");
@@ -75,10 +69,8 @@ class _NewoState extends State<Newo> {
   void _uploadImage(BuildContext context) async {
     if (_imageFile != null) {
       try {
-        String maintenanceVisit =
-            taskData?['name']; // Example maintenance visit ID
+        String maintenanceVisit = taskData?['name'];
 
-        // Calling the ViewModel to upload the image
         await Provider.of<FeatureView>(context, listen: false)
             .postImageWithMaintenanceVisit(maintenanceVisit, _imageFile!);
 
@@ -93,7 +85,7 @@ class _NewoState extends State<Newo> {
             SnackBar(content: Text('Image uploaded successfully')),
           );
           setState(() {
-            _imageFile = null; // Clear the image after upload
+            _imageFile = null;
           });
         }
       } catch (e) {
@@ -108,8 +100,6 @@ class _NewoState extends State<Newo> {
     }
   }
 
-  // Extracting the selection condition
-
   bool get allSelected => isSelected.every((selected) => selected);
 
   @override
@@ -121,7 +111,10 @@ class _NewoState extends State<Newo> {
     final name = taskData?['name'];
     final checktreeDescription = taskData?['checktree_description'] ?? {};
     final symptomsTable = taskData?['symptoms_table'] ?? {};
+    print('Name');
+    print(name);
     print('///////////fq/q//');
+
     print(checktreeDescription);
 
     symptomsTable.forEach((key, value) {
@@ -130,39 +123,34 @@ class _NewoState extends State<Newo> {
       }
     });
 
-    // Flatten the nested structure and populate items list
     checktreeDescription.forEach((key, value) {
       if (value is List) {
         items.addAll(List<Map<String, dynamic>>.from(value));
       }
     });
 
-    // Initialize the isSelected list based on the 'work_done' value
     isSelected = items.map((item) {
-      return item['work_done'] ==
-          'Yes'; // Set to true if work_done is "Yes", otherwise false
+      return item['work_done'] == 'Yes';
     }).toList();
 
     isLoading = false;
   }
 
-  // Load the saved note when the widget is initialized
   _loadNote() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      noteController.text = prefs.getString('note') ?? ''; // Load saved note
+      noteController.text = prefs.getString('note') ?? '';
     });
   }
 
-  // Save the note to SharedPreferences when the text changes
   _saveNote() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('note', noteController.text); // Save the note
+    prefs.setString('note', noteController.text);
   }
 
   @override
   void dispose() {
-    _saveNote(); // Save the note when the widget is disposed
+    _saveNote();
     super.dispose();
   }
 
@@ -220,7 +208,9 @@ class _NewoState extends State<Newo> {
             if (!_isPunchPressed) {
               return ErrorPage();
             } else {
-              return AlertPage();
+              return AlertPage(
+                name: taskData?['name'],
+              );
             }
           },
         );
@@ -294,27 +284,30 @@ class _NewoState extends State<Newo> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () async {
-                        setState(() {
-                          _isPunchPressed = !_isPunchPressed;
-                        });
+                      onPressed: _isPunchPressed
+                          ? null // Disable the button after it has been pressed
+                          : () async {
+                              setState(() {
+                                _isPunchPressed =
+                                    true; // Set the button to pressed
+                              });
 
-                        // Call the punchInRepo API when the button is pressed
-                        if (_isPunchPressed) {
-                          final featureView =
-                              Provider.of<FeatureView>(context, listen: false);
+                              // Call the punchInRepo API
+                              final featureView = Provider.of<FeatureView>(
+                                  context,
+                                  listen: false);
 
-                          await featureView
-                              .punchInRepo(visiter_name); // API call
-                          print(visiter_name);
+                              await featureView
+                                  .punchInRepo(visiter_name); // API call
+                              print(visiter_name);
 
-                          if (featureView.message != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(featureView.message!),
-                            ));
-                          }
-                        }
-                      },
+                              if (featureView.message != null) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(featureView.message!),
+                                ));
+                              }
+                            },
                       child: Text(
                         _isPunchPressed ? 'PUNCHED IN' : 'PUNCH IN FOR THE JOB',
                         style: const TextStyle(

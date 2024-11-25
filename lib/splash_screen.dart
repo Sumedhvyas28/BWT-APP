@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/view_model/feature_view.dart';
+import 'package:flutter_application_1/view_model/location_post.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
 import 'dart:async';
 import 'package:go_router/go_router.dart';
@@ -12,28 +14,30 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final UserSession _authService = UserSession();
+  final UserSession _userSession = UserSession();
 
   @override
   void initState() {
     super.initState();
-    _navigateAfterDelay();
+    _initializeApp();
   }
 
-  // Checks the login status after a delay and navigates accordingly
-  Future<void> _navigateAfterDelay() async {
-    // Simulate a splash screen delay of 3 seconds
+  Future<void> _initializeApp() async {
+    // Wait for splash screen delay
     await Future.delayed(const Duration(seconds: 4));
 
-    // Check if the user is logged in
-    final isLoggedIn = await _authService.isLoggedIn();
+    // Check if user is logged in
+    final isLoggedIn = await _userSession.isLoggedIn();
 
-    // Navigate based on login status
     if (isLoggedIn) {
-      // If logged in, go to the general DashboardPage
+      // Start location updates
+      final featureView = context.read<FeatureView>();
+      context.read<LocationViewModel>().startLocationUpdates(featureView);
+
+      // Navigate to home
       context.go('/home');
     } else {
-      // If not logged in, go to the LoginPage
+      // Navigate to onboarding
       context.go('/onboarding');
     }
   }
@@ -44,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/gif/splash_intro.gif', // Path to your GIF asset
+          'assets/gif/splash_intro.gif',
           fit: BoxFit.cover,
         ),
       ),

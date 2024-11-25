@@ -5,6 +5,8 @@ import 'package:flutter_application_1/constants/pallete.dart';
 import 'package:flutter_application_1/pages/dashboard/task_details/map.dart';
 import 'package:flutter_application_1/view_model/auth_view_model.dart';
 import 'package:flutter_application_1/view_model/feature_view.dart';
+import 'package:flutter_application_1/view_model/location_post.dart';
+import 'package:flutter_application_1/view_model/user_session.dart';
 import 'package:geolocator/geolocator.dart'; // Import Geolocator
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
@@ -26,35 +28,27 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  late LocationViewModel _locationViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (GlobalData().token.isNotEmpty) {
+      final featureView = context.read<FeatureView>();
+      _locationViewModel = context.read<LocationViewModel>();
+      _locationViewModel.startLocationUpdates(featureView);
+    }
+  }
+
   @override
   void dispose() {
-    _locationUpdateTimer?.cancel();
+    _locationViewModel.cancelLocationUpdates();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
-  void _startLocationUpdates(double initialLat, double initialLon) {
-    // Immediately post the location after login
-    context
-        .read<FeatureView>()
-        .submitLocation(initialLat.toString(), initialLon.toString());
-
-    // Set up periodic updates
-    _locationUpdateTimer = Timer.periodic(Duration(minutes: 2), (_) async {
-      try {
-        Map<String, double> location = await _getCurrentLocation();
-        context.read<FeatureView>().submitLocation(
-            location['latitude'].toString(), location['longitude'].toString());
-        print(
-            'Location sent: ${location['latitude']}, ${location['longitude']}');
-      } catch (e) {
-        print('Error updating location: $e');
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     mediaSize = MediaQuery.of(context).size;
 
@@ -149,21 +143,26 @@ class _LoginPageState extends State<LoginPage> {
     return ElevatedButton(
       onPressed: () async {
         try {
-          // Get the current location
-          Map<String, double> location = await _getCurrentLocation();
-
-          // Login process
           Map data = {
             "email": emailController.text.trim(),
             "password": passwordController.text.trim(),
           };
 
-          authViewModel.login(data, context);
+          await context.read<AuthViewModel>().login(data, context);
 
-          // Start periodic location updates
-          _startLocationUpdates(location['latitude']!, location['longitude']!);
+          // double latitude = 37.4219983;
+          // double longitude = -122.084;
+          // await context
+          //     .read<FeatureView>()
+          //     .submitLocation(latitude.toString(), longitude.toString());
+
+          if (GlobalData().token.isNotEmpty) {
+            final featureView =
+                context.read<FeatureView>(); // Obtain the FeatureView instance
+            context.read<LocationViewModel>().startLocationUpdates(featureView);
+          }
         } catch (e) {
-          print('Error during login: $e');
+          print('Error during login or location updates: $e');
         }
       },
       style: ElevatedButton.styleFrom(

@@ -1,17 +1,35 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/view_model/feature_view.dart';
+import 'package:flutter_application_1/view_model/location_post.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserSession with ChangeNotifier {
+  Future<void> startLocationUpdatesIfLoggedIn(
+      LocationViewModel locationViewModel, FeatureView featureView) async {
+    final isLoggedIn = await this.isLoggedIn();
+    if (isLoggedIn) {
+      locationViewModel.startLocationUpdates(featureView);
+    }
+  }
+
   Future<void> storeUserData(dynamic userData) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userData', jsonEncode(userData));
+    GlobalData().updateUserData(
+      newId: userData['id'] ?? '',
+      newName: userData['name'] ?? '',
+      newEmail: userData['email'] ?? '',
+      newPhnNo: userData['phnNo'] ?? '',
+      newCountry: userData['country'] ?? '',
+      newRole: userData['role'] ?? '',
+      newApiToken: userData['authToken'] ?? '',
+    );
   }
 
   Future<Map<String, dynamic>?> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final userData = prefs.getString('userData');
-
     if (userData != null) {
       return jsonDecode(userData);
     }
@@ -21,6 +39,7 @@ class UserSession with ChangeNotifier {
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('userData');
+    GlobalData().clearUserData(); // Clear global data on sign-out
   }
 
   Future<bool> isLoggedIn() async {
@@ -38,8 +57,7 @@ class UserSession with ChangeNotifier {
         newPhnNo: userData['phnNo'] ?? '',
         newCountry: userData['country'] ?? '',
         newRole: userData['role'] ?? '',
-        newApiToken:
-            userData['authToken'] ?? '', // Ensure the key matches stored data
+        newApiToken: userData['authToken'] ?? '',
       );
     }
   }
@@ -50,9 +68,11 @@ class GlobalData {
   factory GlobalData() => _instance;
   GlobalData._internal();
 
+  static final UserSession userSession = UserSession();
+
   String id = '';
   String name = '';
-  String email = "user@gmail.com";
+  String email = '';
   String phnNo = '';
   String country = '';
   String role = '';
@@ -74,5 +94,15 @@ class GlobalData {
     country = newCountry;
     role = newRole;
     token = newApiToken;
+  }
+
+  void clearUserData() {
+    id = '';
+    name = '';
+    email = '';
+    phnNo = '';
+    country = '';
+    role = '';
+    token = '';
   }
 }

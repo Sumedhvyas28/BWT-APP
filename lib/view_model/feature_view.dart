@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/api_constant/routes/api_routes.dart';
 import 'package:flutter_application_1/models/post_location.dart';
+import 'package:flutter_application_1/models/reschedule.dart';
 import 'package:flutter_application_1/repository/auth_repo.dart';
 import 'package:flutter_application_1/view_model/user_session.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +23,7 @@ class FeatureView with ChangeNotifier {
   String _distanceMessage = '';
   String get distanceMessage => _distanceMessage;
   String? errorMessage;
+  String? get errorMMessage => errorMessage;
 
   // Method to post image with maintenance visit
   Future<void> postImageWithMaintenanceVisit(
@@ -229,10 +232,73 @@ class FeatureView with ChangeNotifier {
 
   Future<void> submitLocation(String lat, String lon) async {
     try {
+      String? token = GlobalData().token; // Access the token directly
+      if (token == null || token.isEmpty) {
+        throw Exception("User is not logged in, cannot submit location");
+      }
+
       await _myRepo.postLocationFive(lat, lon);
-      print("Location submitted successfully");
+      // print(GlobalData().token);
+      print("wfqqwqlpqlp");
     } catch (e) {
       print("Error submitting location: $e");
+    }
+  }
+
+  Future<Map<String, double>> getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permission denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied');
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    return {'latitude': position.latitude, 'longitude': position.longitude};
+  }
+
+  String _statusMessage = '';
+
+  String get statusMessage => _statusMessage;
+  Future<void> submitTaskReschedule({
+    required String maintenanceVisit,
+    required String type,
+    required String reason,
+    required String date,
+    required String hours,
+  }) async {
+    _isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _myRepo.postTaskReschedule(
+        maintenanceVisit: maintenanceVisit,
+        type: type,
+        reason: reason,
+        date: date,
+        hours: hours,
+      );
+      print('fqfqqfq lofwqlfoqf l');
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      errorMessage = e.toString();
+      notifyListeners();
     }
   }
 }
