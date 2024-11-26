@@ -168,6 +168,11 @@ class _NewMapPageState extends State<NewMapPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('/////////////');
+    print(taskData?['name']);
+    print('lfqoqflqfqkfqkfqk');
+
+    print('/////////////');
     final postLData = Provider.of<FeatureView>(context, listen: false);
 
     return Scaffold(
@@ -272,7 +277,9 @@ class _NewMapPageState extends State<NewMapPage> {
                                   context,
                                   PageTransition(
                                     child: Newo(
-                                      task: taskData,
+                                      // task: taskData,
+                                      task: taskData?['name']
+                                          as String, // Explicitly cast to String
                                     ),
                                     type: PageTransitionType.fade,
                                   ));

@@ -73,7 +73,7 @@ class _TasksPageState extends State<TasksPage> {
 
   Future<void> fetchTaskData() async {
     final url = Uri.parse(
-        'https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
+        'https://8656-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance');
 
     try {
       final response = await http.get(url, headers: {
@@ -181,6 +181,7 @@ class _TasksPageState extends State<TasksPage> {
         print('/////////////');
         print(task);
         final mntcTime = task['mntc_time']?.substring(0, 8) ?? 'No Time';
+        final endTime = task['mntc_date']?.substring(0, 8) ?? 'No Time';
         final name = task['name'];
         Html(
           data: 'Description: ${task['description']}',
@@ -216,7 +217,7 @@ class _TasksPageState extends State<TasksPage> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      mntcTime,
+                      endTime,
                       style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -268,7 +269,7 @@ class _TasksPageState extends State<TasksPage> {
                                         style: TextStyle(fontSize: 15),
                                       ),
                                       Text(
-                                        task['mntc_date'],
+                                        mntcTime,
                                         style: TextStyle(fontSize: 15),
                                       ),
                                     ],

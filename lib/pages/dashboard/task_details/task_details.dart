@@ -65,7 +65,7 @@ class _TaskDetailsState extends State<TaskDetails> {
     // Dynamically use widget.task for the task name in the URL
     final String task = widget.task; // Use the task passed to the widget
     final String url =
-        'https://eb93-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance_?name=$task';
+        'https://8656-45-113-107-90.ngrok-free.app/api/method/field_service_management.api.get_maintenance_?name=$task';
 
     setState(() => isLoading = true); // Show loading indicator during fetch
 
@@ -135,10 +135,14 @@ class _TaskDetailsState extends State<TaskDetails> {
     final task = taskData?['message'];
     final mntcTime = task?['mntc_time']?.substring(0, 8) ??
         'No Time'; // Extracting "HH:MM:SS" format
+    final endTime = task?['mntc_date']?.substring(0, 8) ?? 'No Time';
 
     final visit_name = task['visit_start'];
     final visiter_name = task['name'];
 
+    print('/////////////////////////////////////////////////////');
+    print(mntcTime);
+    print(endTime);
     print('/////////////////////////////////////////////////////');
     print(task['name']);
 
@@ -185,6 +189,7 @@ class _TaskDetailsState extends State<TaskDetails> {
           Navigator.push(
             context,
             PageTransition(
+              // child: NewMapPage(task: task),
               child: NewMapPage(task: task),
               type: PageTransitionType.fade,
             ),
@@ -309,10 +314,13 @@ class _TaskDetailsState extends State<TaskDetails> {
                                             0.02),
                                     child: InkWell(
                                       onTap: () {
+                                        print(taskData?['message']);
+                                        print('////message///');
                                         Navigator.push(
                                           context,
                                           PageTransition(
-                                            child: mapPage(),
+                                            child: mapPage(
+                                                task: taskData?['message']),
                                             type: PageTransitionType.fade,
                                           ),
                                         );
@@ -446,7 +454,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                                                     children: [
                                                       SizedBox(width: 5),
                                                       Text(
-                                                        mntcTime,
+                                                        endTime,
                                                         style: TextStyle(
                                                             fontSize: 12),
                                                       ),
