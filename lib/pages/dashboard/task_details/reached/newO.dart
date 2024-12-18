@@ -944,13 +944,25 @@ class _NewoState extends State<Newo> {
                                         borderRadius: BorderRadius.circular(3),
                                         border: Border.all(color: Colors.grey),
                                       ),
-                                      child: TextField(
-                                        controller: noteController,
-                                        maxLines: null,
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                        ),
-                                      ),
+                                      child: taskData!['service_tech_notes']
+                                                  ?.contains('<') ==
+                                              true
+                                          ? Html(
+                                              data: taskData![
+                                                      'service_tech_notes'] ??
+                                                  '',
+                                            )
+                                          : TextField(
+                                              controller: TextEditingController(
+                                                text: taskData![
+                                                        'service_tech_notes'] ??
+                                                    '',
+                                              ),
+                                              maxLines: null,
+                                              decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                              ),
+                                            ),
                                     ),
                                     const SizedBox(
                                       height: 10,
@@ -966,8 +978,9 @@ class _NewoState extends State<Newo> {
                                       onPressed: _isPunchOutPressed
                                           ? null
                                           : () async {
-                                              String note = noteController.text;
-
+                                              String note = taskData![
+                                                      'service_tech_notes'] ??
+                                                  '';
                                               await Checktree.technicianNotes(
                                                   visiter_name, note, context);
                                             },
